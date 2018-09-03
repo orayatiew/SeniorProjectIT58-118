@@ -29,8 +29,10 @@ def webhook():
     # Action Switcher
     if action == 'Reservation.Reservation-yes':
         res = create_reservation(req)
-	if action == 'auth.confirm':
+
+	if else action == 'auth.confirm':
 		res = authentication_student(req)
+
     else:
         log.error('Unexpected action.')
 
