@@ -40,8 +40,8 @@ def webhook():
     return make_response(jsonify({'fulfillmentText': res}))
 
 def authentication_student(req):
-	parameters = req.get('queryResult').get('parameters')
-	studentId =parameters.get('studentId')
+	#parameters = req.get('queryResult').get('parameters')
+	#studentId =parameters.get('studentId')
 	return 'ระบุรหัสOTP ที่ได้รับจากอีเมลของคุณค่ะ'
 
 def create_reservation(req):
