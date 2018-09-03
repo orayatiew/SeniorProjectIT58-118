@@ -29,6 +29,8 @@ def webhook():
     # Action Switcher
     if action == 'Reservation.Reservation-yes':
         res = create_reservation(req)
+	if action == 'auth.confirm':
+		res = authentication_student(req)
     else:
         log.error('Unexpected action.')
 
@@ -37,6 +39,10 @@ def webhook():
 
     return make_response(jsonify({'fulfillmentText': res}))
 
+def authentication_student(req):
+	parameters = req.get('queryResult').get('parameters')
+	studentId =parameters.get('studentId')
+	return 'ระบุรหัสOTP ที่ได้รับจากอีเมลของคุณค่ะ'
 
 def create_reservation(req):
     parameters = req.get('queryResult').get('parameters')
