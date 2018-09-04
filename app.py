@@ -37,10 +37,10 @@ def webhook():
         return 'json error'
 
     # Action Switcher
-    if action == 'auth.confirm': 
-        res = authentication_student(req) 
- 	if action == 'input.otp': #error
-  		res = checkOTP(req) 
+    if action == 'auth.confirm':
+        res = authentication_student(req)
+    if action == 'input.auth':
+        res = checkOTP(req)
     else: 
         log.error('Unexpected action.') 
 
@@ -79,7 +79,8 @@ def checkOTP(req):
 
 	if checkNo == otp:
 		print('same')
-		return 'otp match'
+		outputMs = 'otp match'
+	return str(outputMs)
 
 def random_refNO(length = 6, char = string.ascii_uppercase):
     return ''.join(random.choice( char) for x in range(length))
