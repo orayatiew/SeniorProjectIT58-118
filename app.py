@@ -1,19 +1,25 @@
 from flask import Flask, request, make_response, jsonify
 import json
 import os
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from dateutil.parser import parse
-from datetime import datetime
+import pyrebase
+from smtplib import SMTPException
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 
-cred = credentials.Certificate('D:\SITChat\seniorproject-38db0-firebase-adminsdk-28jq8-adaff53e71.json')
-default_app = firebase_admin.initialize_app(cred,
-    {
-        "project_id": "seniorproject-38db0",
-    })
+config = {
+	"apiKey": "AIzaSyDxX-2fA7eF24CKtisuPYQ0_3Ye_r2suW0",
+    "authDomain": "seniorproject-38db0.firebaseapp.com",
+    "databaseURL": "https://seniorproject-38db0.firebaseio.com",
+    "projectId": "seniorproject-38db0",
+    "storageBucket": "seniorproject-38db0.appspot.com",
+    "messagingSenderId": "792126926339"
+}
 
-db = firestore.client()
+firebase = pyrebase.initialize_app(config)
+db = firebase.database()
 
 app = Flask(__name__)
 log = app.logger
@@ -27,12 +33,9 @@ def webhook():
         return 'json error'
 
     # Action Switcher
-    if action == 'Reservation.Reservation-yes':
-        res = create_reservation(req)
-
-	if else action == 'auth.confirm':
-		res = authentication_student(req)
-
+    if action == 'auth.confirm':
+        res = authentication_student(req)
+	
     else:
         log.error('Unexpected action.')
 
@@ -42,27 +45,23 @@ def webhook():
     return make_response(jsonify({'fulfillmentText': res}))
 
 def authentication_student(req):
-	#parameters = req.get('queryResult').get('parameters')
-	#studentId =parameters.get('studentId')
-	return 'ระบุรหัสOTP ที่ได้รับจากอีเมลของคุณค่ะ'
+	parameters = req.get('queryResult').get('parameters')
+	studentId =parameters.get('studentId')
+	email = db.child("Students").child(studentId).child("email").get()
 
-def create_reservation(req):
-    parameters = req.get('queryResult').get('parameters')
-    name = parameters.get('name')
-    seats = parameters.get('seats')
-    time = parameters.get('time')
-    date = parameters.get('date')
-    # time = parse(Strtime)
-    # date = parse(Strdate)
+	#sender = 'seniorproject.5818@gmail.com'
+	#receivers = ['thehunny.oraya@gmail.com']
+	#message = "OTP"
+	#try:
+	#	smtpObj = smtplib.SMTP('smtp.gmail.com', 465)
+	#	smtpObj.sendmail(sender, receivers, message)         
+	#	print ("Successfully sent email")
+	#except SMTPException:
+	#	print ("Error: unable to send email")
 
-    date_ref = db.collection(u'date').document(str(date))
-    date_ref.collection(u'reservations').add({
-        u'name': name,
-        u'seats': seats,
-        u'time' : time,
-        # u'time': date.replace(hour=time.hour-7, minute=time.minute)
-    })
-    return 'เรียบร้อยละค่า จอง ' + str(seats)+ time+  ' ดูเมนูต่อเลยมั้ยเอ่ย'
+	return str(email.val())
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=int(os.environ.get('PORT','5000')))
