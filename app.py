@@ -37,9 +37,11 @@ def webhook():
         return 'json error'
 
     # Action Switcher
+    if action == 'auth.request':
+        res = auth_role(req)
     if action == 'auth.confirm':
-        res = authentication_student(req)
-    if action == 'input.auth':
+        res = authentications(req)
+    if action == 'input.otp':
         res = checkOTP(req)
     else: 
         log.error('Unexpected action.') 
@@ -48,44 +50,54 @@ def webhook():
     print('Response: ' + res)
     return make_response(jsonify({'fulfillmentText': res}))
 
-def authentication_student(req):
-	parameters = req.get('queryResult').get('parameters')
-	studentId =parameters.get('studentId')
-	email = db.child("Students").child(studentId).child("email").get()
-	role = 'Students'
-	otp_no = random.randint(100000,999999)
-	ref_no = random_refNO()
-	to = str(email.val())
-
-	statusSendMail = sendEmailAuth(to,otp_no,ref_no,studentId,role)
-
-	if statusSendMail == 'Success':
-		data = {"otpNO" : otp_no}
-		db.child("Students").child(studentId).update(data)
-		msg = 'ระบบทำการส่งรหัส OTP ไปยัง \n E-mail: ' + str(email.val()) +'\n โดยมี ref No. ' + ref_no + '\n กรุณาระบุรหัส OTP ที่ได้รับด้วยค่ะ'
-	else:
-		msg = 'ส่งไม่สำเร็จ' + statusSendMail
-
-	return msg
-
-def checkOTP(req):
-	parameters = req.get('queryResult').get('parameters')
-	studentId = parameters.get('id')
-	otpPar =parameters.get('number')
-	otpDB =db.child("Students").child(studentId).child("otp").get()
+def auth_role(req):
+    parameters = req.get('queryResult').get('parameters')
+    role = parameters.get('role')
 	
-	otp = str(otpPar)
-	checkNo = str(otpDB.val())
+    if role == 'Students':
+        return 'ขอรหัสนักศึกษาของคุณด้วยค่ะ'
+    if role == 'Staffs':
+        return 'ขอรหัสเจ้าหน้าที่ของคุณด้วยค่ะ'
+    else:
+        return 'ขอรหัสผู้ช่วยสอนของคุณด้วยค่ะ'
 
-	if checkNo == otp:
-		print('same')
-		outputMs = 'otp match'
-	return str(outputMs)
+def authentications(req):
+    parameters = req.get('queryResult').get('parameters')
+    outputContexts = req.get('queryResult').get('outputContexts')
+
+    ID = outputContexts[1].get('parameters').get('ID.original')
+    role = outputContexts[1].get('parameters').get('role')
+
+    status_auth = db.child(role).child(ID).child("status_auth").get()
+    checkStatus = str(status_auth.val())
+
+    if checkStatus == 'no':
+
+        email = db.child(role).child(ID).child("email").get()
+        to = str(email.val())
+
+        otp_no = random.randint(100000,999999)
+        ref_no = random_refNO()
+	
+        statusSendMail = sendEmailAuth(to,otp_no,ref_no)
+
+        if statusSendMail == 'Success':
+            data = {"otpNO" : otp_no}
+            db.child(role).child(ID).update(data)
+            print('OTP : '+ str(otp_no))
+            msg = 'ระบบทำการส่งรหัส OTP ไปยัง \n E-mail: ' + str(email.val()) +'\n โดยมี ref No. ' + ref_no + '\n กรุณาระบุรหัส OTP ที่ได้รับด้วยค่ะ'
+        else:
+            msg = 'ส่งไม่สำเร็จ' + statusSendMail
+    else:
+	    msg = 'คุณได้ทำการยืนยันตัวตนไปแล้วค่ะ'
+    return msg
+
 
 def random_refNO(length = 6, char = string.ascii_uppercase):
     return ''.join(random.choice( char) for x in range(length))
 
-def sendEmailAuth (email,otpno,refno,id_user,role):
+
+def sendEmailAuth (email,otpno,refno):
 	to = email
 	gmail_user = 'seniorproject.5818@gmail.com'
 	gmail_pwd = 'project5818'
@@ -96,11 +108,6 @@ def sendEmailAuth (email,otpno,refno,id_user,role):
 	smtpserver.login(gmail_user, gmail_pwd)
 	header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Subject:Authemtication with SIT Chatbot\n'
 	
-	nameVar = db.child(role).child(id_user).child("name").get()
-	lnameVar = db.child(role).child(id_user).child("lname").get()
-
-	name = str(nameVar.val())
-	lname = str(lnameVar.val())
 
 	msg = header + '\n OTP NO : ' + str(otpno) +'\n ref NO. : ' + refno
 	message = msg.encode('ascii', 'ignore').decode('ascii')
@@ -110,6 +117,36 @@ def sendEmailAuth (email,otpno,refno,id_user,role):
 	smtpserver.close()
 	
 	return status 
+
+def checkOTP(req):
+    parameters = req.get('queryResult').get('parameters')
+    outputContexts = req.get('queryResult').get('outputContexts')
+    
+    ID = outputContexts[1].get('parameters').get('ID.original')
+    role = outputContexts[1].get('parameters').get('role')
+
+    otpPar =parameters.get('number.original')
+    otpDB =db.child(role).child(ID).child("otpNO").get()
+	
+    otp = str(otpPar)
+    checkNo = str(otpDB.val())
+
+    if checkNo == otp:
+        print('same')
+        data = {"status_auth" : "yes"}
+        db.child(role).child(ID).update(data)
+		
+        userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+        userId_data = {"userId" : str(userId)}
+        db.child(role).child(ID).update(userId_data)
+
+        db.child(role).child(ID).child("otpNO").remove()
+        print('userId : '+ str(userId) )
+        outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ'
+    else:
+        print('not same')
+        outputMs = 'รหัส OTP ของท่านไม่ถูกต้อง กรุณาระบุใหม่อีกครั้ง'
+    return    str(outputMs)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=int(os.environ.get('PORT','5000')))
