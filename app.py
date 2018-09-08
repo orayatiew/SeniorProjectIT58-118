@@ -85,6 +85,16 @@ def authentications(req):
             data = {"otpNO" : otp_no}
             db.child(role).child(ID).update(data)
             print('OTP : '+ str(otp_no))
+            
+            userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+            userId_data = {str(userId) : str(userId)}
+
+            matchUserdata = {
+               "MatchUsers/"+str(userId): {
+                     "role": role,
+					 "ID":ID
+            }}
+            db.update(matchUserdata)
             msg = 'ระบบทำการส่งรหัส OTP ไปยัง \n E-mail: ' + str(email.val()) +'\n โดยมี ref No. ' + ref_no + '\n กรุณาระบุรหัส OTP ที่ได้รับด้วยค่ะ'
         else:
             msg = 'ส่งไม่สำเร็จ' + statusSendMail
@@ -121,32 +131,51 @@ def sendEmailAuth (email,otpno,refno):
 def checkOTP(req):
     parameters = req.get('queryResult').get('parameters')
     outputContexts = req.get('queryResult').get('outputContexts')
-    
-    ID = outputContexts[1].get('parameters').get('ID.original')
     role = outputContexts[1].get('parameters').get('role')
 
-    otpPar =parameters.get('number.original')
-    otpDB =db.child(role).child(ID).child("otpNO").get()
+    userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+    ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
+    std_ID = str(ID.val())
+   
+    
+
+    otpPar =outputContexts[0].get('parameters').get('number.original')
+    otpDB =db.child(role).child(std_ID).child("otpNO").get()
 	
     otp = str(otpPar)
     checkNo = str(otpDB.val())
 
     if checkNo == otp:
         print('same')
+        print(role)
+        print(std_ID)
         data = {"status_auth" : "yes"}
-        db.child(role).child(ID).update(data)
-		
-        userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
-        userId_data = {"userId" : str(userId)}
-        db.child(role).child(ID).update(userId_data)
+        db.child(role).child(std_ID).update(data)
 
-        db.child(role).child(ID).child("otpNO").remove()
+        userId_data = {"userId" : str(userId)}
+        db.child(role).child(std_ID).update(userId_data)
+
         print('userId : '+ str(userId) )
         outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ'
+        #updateRichMenu(str(userId),req)
     else:
         print('not same')
+        print("OTP usr: "+otp)
+        print("OTP db: "+checkNo)
+        print(role)
+        print(std_ID)
         outputMs = 'รหัส OTP ของท่านไม่ถูกต้อง กรุณาระบุใหม่อีกครั้ง'
     return    str(outputMs)
+
+def updateRichMenu (userId,req):
+    return req({
+        method: 'POST',
+        uri: 'https://api.line.me/v2/bot/user/userId/richmenu/richmenu-522899ebf0a6d1fd004f83bbc51cfbba',
+        headers: {
+              Authorization: 'Bearer {3Qg6VvA4B3r0t1QIp2eK+8ofPyhv0s+SieA4KV5YXyk4R2BDXyXhmmTgyV0jzN5JjxeJTBnMh7/FTJmHDNkaFmQ7bUhPIzvcWloXgk+hn301hRgT6uABPXXVumtkvlfLhO97NJ90ftB6/Vs5P+Bd2AdB04t89/1O/w1cDnyilFU=}'
+			  },
+         json: true
+         })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=int(os.environ.get('PORT','5000')))
