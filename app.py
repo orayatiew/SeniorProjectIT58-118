@@ -177,7 +177,7 @@ def checkOTP(req):
         data = {"status_auth" : "yes"}
         db.child(role).child(std_ID).update(data)
 
-        updateRichMenu(str(userId),req)
+        updateRichMenu(str(userId),role)
     else:
         print('not same')
         print("OTP usr: "+otp)
@@ -187,13 +187,17 @@ def checkOTP(req):
         outputMs = 'รหัส OTP ของท่านไม่ถูกต้อง กรุณาระบุใหม่อีกครั้ง'
     return    str(outputMs)
 
-def updateRichMenu (userId,req):
-    print('updateRichMenu')
-    print(userId)
-    rich_menu_id = 'richmenu-522899ebf0a6d1fd004f83bbc51cfbba'
-    #line_bot_api.link_rich_menu_to_user(userId, rich_menu_id)
+def updateRichMenu (userId,role):
+    if role == 'Students':
+        print('changeMenuStudents')
+        rich_menu_id = 'richmenu-fad9e175d271b0a0781c53249f1e5c1c'
+        line_bot_api.link_rich_menu_to_user(userId, rich_menu_id) #---link
+    else:
+        print('changeMenuLF')
+        rich_menu_id = 'richmenu-a248b5ee837dc5c60c71e9bc41a9bd01'
+        line_bot_api.link_rich_menu_to_user(userId, rich_menu_id)
 
-    ine_bot_api.unlink_rich_menu_from_user(user_id)
+		#ine_bot_api.unlink_rich_menu_from_user(user_id)---unlink
     return 'menu changed'
 
 if __name__ == '__main__':
