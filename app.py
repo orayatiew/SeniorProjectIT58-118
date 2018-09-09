@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, make_response, jsonify
+﻿from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
 import pyrebase
@@ -12,6 +12,18 @@ import random
 from random import randint
 import string 
 import sys	
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage,
+)
+
+
+
 
 config = {
 	"apiKey": "AIzaSyDxX-2fA7eF24CKtisuPYQ0_3Ye_r2suW0",
@@ -27,6 +39,12 @@ db = firebase.database()
 
 app = Flask(__name__)
 log = app.logger
+
+
+line_bot_api = LineBotApi('3Qg6VvA4B3r0t1QIp2eK+8ofPyhv0s+SieA4KV5YXyk4R2BDXyXhmmTgyV0jzN5JjxeJTBnMh7/FTJmHDNkaFmQ7bUhPIzvcWloXgk+hn301hRgT6uABPXXVumtkvlfLhO97NJ90ftB6/Vs5P+Bd2AdB04t89/1O/w1cDnyilFU=')
+handler = WebhookHandler('22026c4321303e7bc5a36ae01728b77e')
+
+
 
 @app.route("/", methods=['POST'])
 def webhook():
@@ -149,15 +167,17 @@ def checkOTP(req):
         print('same')
         print(role)
         print(std_ID)
-        data = {"status_auth" : "yes"}
-        db.child(role).child(std_ID).update(data)
+        
 
         userId_data = {"userId" : str(userId)}
         db.child(role).child(std_ID).update(userId_data)
 
         print('userId : '+ str(userId) )
         outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ'
-        #updateRichMenu(str(userId),req)
+        data = {"status_auth" : "yes"}
+        db.child(role).child(std_ID).update(data)
+
+        updateRichMenu(str(userId),req)
     else:
         print('not same')
         print("OTP usr: "+otp)
@@ -168,14 +188,13 @@ def checkOTP(req):
     return    str(outputMs)
 
 def updateRichMenu (userId,req):
-    return req({
-        method: 'POST',
-        uri: 'https://api.line.me/v2/bot/user/userId/richmenu/richmenu-522899ebf0a6d1fd004f83bbc51cfbba',
-        headers: {
-              Authorization: 'Bearer {3Qg6VvA4B3r0t1QIp2eK+8ofPyhv0s+SieA4KV5YXyk4R2BDXyXhmmTgyV0jzN5JjxeJTBnMh7/FTJmHDNkaFmQ7bUhPIzvcWloXgk+hn301hRgT6uABPXXVumtkvlfLhO97NJ90ftB6/Vs5P+Bd2AdB04t89/1O/w1cDnyilFU=}'
-			  },
-         json: true
-         })
+    print('updateRichMenu')
+    print(userId)
+    rich_menu_id = 'richmenu-522899ebf0a6d1fd004f83bbc51cfbba'
+    #line_bot_api.link_rich_menu_to_user(userId, rich_menu_id)
+
+    ine_bot_api.unlink_rich_menu_from_user(user_id)
+    return 'menu changed'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=int(os.environ.get('PORT','5000')))
