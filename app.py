@@ -61,12 +61,53 @@ def webhook():
         res = authentications(req)
     if action == 'input.otp':
         res = checkOTP(req)
+    if action =='event.cancelclass':
+        res = request_canceledClass(req)
+    if action =='cancelclass':
+        res = pushMsg_cancelclass(req)
     else: 
         log.error('Unexpected action.') 
 
     print('Action: ' + action) 
     print('Response: ' + res)
     return make_response(jsonify({'fulfillmentText': res}))
+
+
+def pushMessage(req):
+    to = 'U15d3c9cad9dedc9cdd69a1c255319ea4'
+    line_bot_api.push_message(to, TextSendMessage(text='Hello World!'))
+    print('send message Success')
+    return 'send message Success'
+
+def request_canceledClass(req):
+    userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+    role = db.child("MatchUsers").child(str(userId)).child("role").get()
+    if str(role.val()) == 'LF':
+        return 'ต้องการแจ้งงดการเรียนการสอนวิชาอะไรคะ'
+    else:
+        return 'ผู้ช่วยสอนเท่านั้นที่สามารถเเจ้งงดการเรียนการสอนรายวิชาได้ค่ะ'
+
+def pushMsg_cancelclass(req):
+    print('pushMsg_cancelclass')
+    outputContexts = req.get('queryResult').get('outputContexts')
+    sub = outputContexts[0].get('parameters').get('subjects')
+    sec = outputContexts[0].get('parameters').get('section')
+    date = outputContexts[0].get('parameters').get('date')
+
+    userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+    ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
+    IDcheck = db.child("Course").child(str(sub)).child("lf_id").get()
+
+	
+    if str(ID.val()) == str(IDcheck.val()):
+        stds = db.child("Course").child(str(sub)).child("students").get()
+        stdArr = stds.val()
+        del stdArr[0]
+        print(stdArr)
+        line_bot_api.multicast(stdArr00, TextSendMessage(text='แจ้งเตือนนักศึกษา'+str(sec)+'\nงดการเรียนการสอนวิชา '+str(sub) +'\nวันที่ '+str(date)))
+        return 'กำลังดำเนินรายการ'
+    else:
+        return 'ผู้ช่วยสอนประจำวิชานี้เท่านั้น ที่สามารถทำการเเจ้งเตือนได้ค่ะ'
 
 def auth_role(req):
     parameters = req.get('queryResult').get('parameters')
@@ -149,7 +190,7 @@ def sendEmailAuth (email,otpno,refno):
 def checkOTP(req):
     parameters = req.get('queryResult').get('parameters')
     outputContexts = req.get('queryResult').get('outputContexts')
-    role = outputContexts[1].get('parameters').get('role')
+    role = outputContexts[0].get('parameters').get('role')
 
     userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
     ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
@@ -193,7 +234,7 @@ def updateRichMenu (userId,role):
         rich_menu_id = 'richmenu-fad9e175d271b0a0781c53249f1e5c1c'
         line_bot_api.link_rich_menu_to_user(userId, rich_menu_id) #---link
     else:
-        print('changeMenuLF')
+        print('changeMenuLFStaffs')
         rich_menu_id = 'richmenu-a248b5ee837dc5c60c71e9bc41a9bd01'
         line_bot_api.link_rich_menu_to_user(userId, rich_menu_id)
 
