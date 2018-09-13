@@ -47,7 +47,7 @@ handler = config.LINEBOTAPI_SECRETTOKEN
 def webhook():
     req = request.get_json(silent=True, force=True)
     try:
-        action = req.get('queryResult').get('action')
+        action = getAction(req) #def from getDataFromDialogflow.py
     except AttributeError:
         return 'json error'
 
@@ -77,8 +77,7 @@ def pushMessage(req):
     return 'send message Success'
 
 def request_canceledClass(req):
-    userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
-
+    userId = getUserID(req) #def from getDataFromDialogflow
     role = db.child("MatchUsers").child(str(userId)).child("role").get()
 
     if str(role.val()) == 'LF':
@@ -87,15 +86,13 @@ def request_canceledClass(req):
         return 'ผู้ช่วยสอนเท่านั้นที่สามารถเเจ้งงดการเรียนการสอนรายวิชาได้ค่ะ'
 
 def pushMsg_cancelclass(req):
-    print('pushMsg_cancelclass')
-    outputContexts = req.get('queryResult').get('outputContexts')
-    sub = outputContexts[0].get('parameters').get('subjects')
-    sec = outputContexts[0].get('parameters').get('section')
-    date = outputContexts[0].get('parameters').get('date')
+    
+    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    sec = getParamOutputcontext(req,'section',0)
+    date = getParamOutputcontext(req,'date',0)
     date=str(date).replace("T12:00:00+00:00","")
 
-
-    userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+    userId = getUserID(req)
     ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
     IDcheck = db.child("Course").child(str(sub)).child("lf_id").get()
 
@@ -111,9 +108,8 @@ def pushMsg_cancelclass(req):
         return 'ผู้ช่วยสอนประจำวิชานี้เท่านั้น ที่สามารถทำการเเจ้งเตือนได้ค่ะ'
 
 def auth_role(req):
-    parameters = req.get('queryResult').get('parameters')
-    role = parameters.get('role')
-	
+    role = getParamQueryResult(req,'role')
+    print(role)
     if role == 'Students':
         return 'ขอรหัสนักศึกษาของคุณด้วยค่ะ'
     if role == 'Staffs':
@@ -122,11 +118,8 @@ def auth_role(req):
         return 'ขอรหัสผู้ช่วยสอนของคุณด้วยค่ะ'
 
 def authentications(req):
-    parameters = req.get('queryResult').get('parameters')
-    outputContexts = req.get('queryResult').get('outputContexts')
-
-    ID = outputContexts[1].get('parameters').get('ID.original')
-    role = outputContexts[1].get('parameters').get('role')
+    ID = getParamOutputcontext(req,'id',1)  #studentID StaffID LFID --> id
+    role = getParamOutputcontext(req,'role',1)
 
     status_auth = db.child(role).child(ID).child("status_auth").get()
     checkStatus = str(status_auth.val())
@@ -146,7 +139,6 @@ def authentications(req):
             db.child(role).child(ID).update(data)
             print('OTP : '+ str(otp_no))
             
-            #userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
             userId = getUserID(req)
             userId_data = {str(userId) : str(userId)}
 
@@ -190,18 +182,16 @@ def sendEmailAuth (email,otpno,refno):
 	return status 
 
 def checkOTP(req):
-    parameters = req.get('queryResult').get('parameters')
-    outputContexts = req.get('queryResult').get('outputContexts')
-    role = outputContexts[0].get('parameters').get('role')
+    role = getParamOutputcontext(req,'role',0)
 
-    userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+    userId = getUserID(req)
     
     ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
     std_ID = str(ID.val())
    
     
 
-    otpPar =outputContexts[0].get('parameters').get('number.original')
+    otpPar = getParamOutputcontext(req,'otp',0)
     otpDB =db.child(role).child(std_ID).child("otpNO").get()
 	
     otp = str(otpPar)
@@ -233,12 +223,12 @@ def checkOTP(req):
 def updateRichMenu (userId,role):
     if role == 'Students':
         print('changeMenuStudents')
-        rich_menu_id = 'richmenu-fad9e175d271b0a0781c53249f1e5c1c'
-        line_bot_api.link_rich_menu_to_user(userId, rich_menu_id) #---link
+        #rich_menu_id = 'richmenu-fad9e175d271b0a0781c53249f1e5c1c'
+        line_bot_api.link_rich_menu_to_user(userId, config.RICHMENU_ID_STUDENT) #---link
     else:
         print('changeMenuLFStaffs')
         rich_menu_id = 'richmenu-a248b5ee837dc5c60c71e9bc41a9bd01'
-        line_bot_api.link_rich_menu_to_user(userId, rich_menu_id)
+        line_bot_api.link_rich_menu_to_user(userId, config.RICHMENU_ID_STAFF_LF)
 
 		#ine_bot_api.unlink_rich_menu_from_user(user_id)---unlink
     return 'menu changed'
