@@ -23,7 +23,7 @@ from linebot.models import (
 )
 import config
 from getDataFromDialogflow import *
-
+from getDataFromFirebase import *
 #config = {
 #	"apiKey": "AIzaSyDxX-2fA7eF24CKtisuPYQ0_3Ye_r2suW0",
 #    "authDomain": "seniorproject-38db0.firebaseapp.com",
@@ -32,8 +32,9 @@ from getDataFromDialogflow import *
 #    "storageBucket": "seniorproject-38db0.appspot.com",
 #    "messagingSenderId": "792126926339"
 #}
-firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
-db = firebase.database()
+
+#firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
+#db = firebase.database()
 
 app = Flask(__name__)
 log = app.logger
@@ -78,9 +79,9 @@ def pushMessage(req):
 
 def request_canceledClass(req):
     userId = getUserID(req) #def from getDataFromDialogflow
-    role = db.child("MatchUsers").child(str(userId)).child("role").get()
+    role = getDataMatchUsers(userId,'role') # request argument userid and parameters that you want to get
 
-    if str(role.val()) == 'LF':
+    if str(role) == 'LF':
         return 'ต้องการแจ้งงดการเรียนการสอนวิชาอะไรคะ'
     else:
         return 'ผู้ช่วยสอนเท่านั้นที่สามารถเเจ้งงดการเรียนการสอนรายวิชาได้ค่ะ'

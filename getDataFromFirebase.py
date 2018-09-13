@@ -17,4 +17,6 @@ def getDataMatchUsers(userid,par):
             return str(param)
         else:
             return str(par)
-    data = db.child("MatchUsers").child(str(userId)).child(par).get()
+
+    data = db.child("MatchUsers").child(str(userid)).child(changePar(par)).get()
+    return str(data.val())
