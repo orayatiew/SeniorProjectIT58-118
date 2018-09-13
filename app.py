@@ -32,6 +32,7 @@ def webhook():
         res = pushMsg_cancelclass(req)
     if action == 'compensatory':
         res = pushMsg_compensatory(req)
+
     else: 
         log.error('Unexpected action.') 
 

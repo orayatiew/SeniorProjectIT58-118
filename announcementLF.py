@@ -49,3 +49,39 @@ def pushMsg_cancelclass(req):
     return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
 
 def  pushMsg_compensatory(req):
+    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    userId = getUserID(req)
+    ID = getDataMatchUsers(userId,'id')
+    IDcheck = getDataCourse(str(sub),'lfid')
+    if ID == IDcheck:
+        sec = getParamOutputcontext(req,'section',0)
+        date = getParamOutputcontext(req,'date',0)
+        date = str(date).replace("T12:00:00+00:00","")
+        stdArr= getDataCourse(str(sub),'student')
+        del stdArr[0]
+        print(stdArr)
+        message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nชดเชยเวลาเรียนวิชา '+str(sub) +'\nวันที่ '+str(date)
+        pushmultiMessage(stdArr,message)
+    else:
+        return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
+    
+    return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
+    
+def  pushMsg_score(req):
+    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    userId = getUserID(req)
+    ID = getDataMatchUsers(userId,'id')
+    IDcheck = getDataCourse(str(sub),'lfid')
+    if ID == IDcheck:
+        sec = getParamOutputcontext(req,'section',0)
+        #link = getParamOutputcontext(req,'link',0)
+        stdArr= getDataCourse(str(sub),'student')
+        del stdArr[0]
+        print(stdArr)
+        message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nคะแนนสอบวิชา '+str(sub) 
+        pushmultiMessage(stdArr,message)
+        #pushImageMessage(stdArr,link)
+    else:
+        return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
+    
+    return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'

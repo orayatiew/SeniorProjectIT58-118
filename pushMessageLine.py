@@ -24,8 +24,11 @@ def pushMessage(to,message):
     return 'send success'
 
 def pushmultiMessage(to,message):
-
     line_bot_api.multicast(to, TextSendMessage(text = message))
+    return 'send success'
+
+def pushImageMessage(to,link):
+    line_bot_api.multicast(to, ImageSendMessage(original_content_url=link, preview_image_url=link))
     return 'send success'
 
 def updateRichMenu(userid,role):
