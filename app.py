@@ -21,30 +21,27 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
+import config
+from getDataFromDialogflow import *
 
-
-
-
-config = {
-	"apiKey": "AIzaSyDxX-2fA7eF24CKtisuPYQ0_3Ye_r2suW0",
-    "authDomain": "seniorproject-38db0.firebaseapp.com",
-    "databaseURL": "https://seniorproject-38db0.firebaseio.com",
-    "projectId": "seniorproject-38db0",
-    "storageBucket": "seniorproject-38db0.appspot.com",
-    "messagingSenderId": "792126926339"
-}
-
-firebase = pyrebase.initialize_app(config)
+#config = {
+#	"apiKey": "AIzaSyDxX-2fA7eF24CKtisuPYQ0_3Ye_r2suW0",
+#    "authDomain": "seniorproject-38db0.firebaseapp.com",
+#    "databaseURL": "https://seniorproject-38db0.firebaseio.com",
+#    "projectId": "seniorproject-38db0",
+#    "storageBucket": "seniorproject-38db0.appspot.com",
+#    "messagingSenderId": "792126926339"
+#}
+firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
 db = firebase.database()
 
 app = Flask(__name__)
 log = app.logger
 
-
-line_bot_api = LineBotApi('3Qg6VvA4B3r0t1QIp2eK+8ofPyhv0s+SieA4KV5YXyk4R2BDXyXhmmTgyV0jzN5JjxeJTBnMh7/FTJmHDNkaFmQ7bUhPIzvcWloXgk+hn301hRgT6uABPXXVumtkvlfLhO97NJ90ftB6/Vs5P+Bd2AdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('22026c4321303e7bc5a36ae01728b77e')
-
-
+#line_bot_api = LineBotApi('3Qg6VvA4B3r0t1QIp2eK+8ofPyhv0s+SieA4KV5YXyk4R2BDXyXhmmTgyV0jzN5JjxeJTBnMh7/FTJmHDNkaFmQ7bUhPIzvcWloXgk+hn301hRgT6uABPXXVumtkvlfLhO97NJ90ftB6/Vs5P+Bd2AdB04t89/1O/w1cDnyilFU=')
+#handler = WebhookHandler('22026c4321303e7bc5a36ae01728b77e')
+line_bot_api = config.LINEBOTAPI_ACCESSTOKEN
+handler = config.LINEBOTAPI_SECRETTOKEN
 
 @app.route("/", methods=['POST'])
 def webhook():
@@ -81,7 +78,9 @@ def pushMessage(req):
 
 def request_canceledClass(req):
     userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+
     role = db.child("MatchUsers").child(str(userId)).child("role").get()
+
     if str(role.val()) == 'LF':
         return 'ต้องการแจ้งงดการเรียนการสอนวิชาอะไรคะ'
     else:
@@ -93,6 +92,8 @@ def pushMsg_cancelclass(req):
     sub = outputContexts[0].get('parameters').get('subjects')
     sec = outputContexts[0].get('parameters').get('section')
     date = outputContexts[0].get('parameters').get('date')
+    date=str(date).replace("T12:00:00+00:00","")
+
 
     userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
     ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
@@ -104,8 +105,8 @@ def pushMsg_cancelclass(req):
         stdArr = stds.val()
         del stdArr[0]
         print(stdArr)
-        line_bot_api.multicast(stdArr00, TextSendMessage(text='แจ้งเตือนนักศึกษา'+str(sec)+'\nงดการเรียนการสอนวิชา '+str(sub) +'\nวันที่ '+str(date)))
-        return 'กำลังดำเนินรายการ'
+        line_bot_api.multicast(stdArr, TextSendMessage(text='แจ้งเตือนนักศึกษา '+str(sec)+'\nงดการเรียนการสอนวิชา '+str(sub) +'\nวันที่ '+str(date)))
+        return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
     else:
         return 'ผู้ช่วยสอนประจำวิชานี้เท่านั้น ที่สามารถทำการเเจ้งเตือนได้ค่ะ'
 
@@ -145,7 +146,8 @@ def authentications(req):
             db.child(role).child(ID).update(data)
             print('OTP : '+ str(otp_no))
             
-            userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+            #userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+            userId = getUserID(req)
             userId_data = {str(userId) : str(userId)}
 
             matchUserdata = {
@@ -193,6 +195,7 @@ def checkOTP(req):
     role = outputContexts[0].get('parameters').get('role')
 
     userId = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
+    
     ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
     std_ID = str(ID.val())
    
@@ -215,8 +218,7 @@ def checkOTP(req):
 
         print('userId : '+ str(userId) )
         outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ'
-        data = {"status_auth" : "yes"}
-        db.child(role).child(std_ID).update(data)
+        
 
         updateRichMenu(str(userId),role)
     else:
