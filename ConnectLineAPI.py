@@ -11,7 +11,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 import config
-
+from getDataFromDialogflow import *
 app = Flask(__name__)
 log = app.logger
 
@@ -37,3 +37,7 @@ def updateRichMenu(userid,role):
     else:
         line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_STAFF_LF)
     return 'Menu changed'
+
+def getMessageContent(message_id):
+     message_content = line_bot_api.get_message_content(message_id)
+     return str(message_content)

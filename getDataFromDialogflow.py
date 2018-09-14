@@ -17,11 +17,18 @@ def changePar(par):
     if par == 'type':
         param = 'announcementType'
         return str(param)
+    if par == 'scoretype':
+        param = 'scoreType'
+        return str(param)
     else:
         return str(par)
 def getUserID(req):
     userID = req.get('originalDetectIntentRequest').get('payload').get('data').get('source').get('userId')
     return str(userID)
+
+def getMessageId(req):
+    message_id = req.get('originalDetectIntentRequest').get('payload').get('data').get('message').get('id')
+    return str(message_id)
 
 def getAction(req):
     action = req.get('queryResult').get('action')

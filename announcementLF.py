@@ -5,8 +5,8 @@ import os
 import config
 from getDataFromDialogflow import *
 from getDataFromFirebase import *
-from pushMessageLine import *
-from authentication import *
+from ConnectLineAPI import *
+
 
 app = Flask(__name__)
 log = app.logger
@@ -74,13 +74,13 @@ def  pushMsg_score(req):
     IDcheck = getDataCourse(str(sub),'lfid')
     if ID == IDcheck:
         sec = getParamOutputcontext(req,'section',0)
-        #link = getParamOutputcontext(req,'link',0)
+        scoreType = getParamOutputcontext(req,'scoretype',0)
+        channel = getParamOutputcontext(req,'channel',0)
         stdArr= getDataCourse(str(sub),'student')
         del stdArr[0]
         print(stdArr)
-        message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nคะแนนสอบวิชา '+str(sub) 
+        message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nคะแนนสอบ'+str(scoreType)+'วิชา '+str(sub) +'ประกาศแล้วค่ะ\nสามารถดูได้ที่'+str(channel)
         pushmultiMessage(stdArr,message)
-        #pushImageMessage(stdArr,link)
     else:
         return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
     

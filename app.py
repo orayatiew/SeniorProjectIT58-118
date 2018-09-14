@@ -5,9 +5,10 @@ import os
 import config
 from getDataFromDialogflow import *
 from getDataFromFirebase import *
-from pushMessageLine import *
+from ConnectLineAPI import *
 from authentication import *
 from announcementLF import *
+from LeaveRequest import *
 app = Flask(__name__)
 log = app.logger
 
@@ -32,7 +33,12 @@ def webhook():
         res = pushMsg_cancelclass(req)
     if action == 'compensatory':
         res = pushMsg_compensatory(req)
-
+    if action == 'score':
+        res = pushMsg_score(req)
+    if action == 'leavereq':
+        res = leaveRequest(req)
+    if action == 'leavereqGetpar':
+        res = leavereqGetpar(req)
     else: 
         log.error('Unexpected action.') 
 

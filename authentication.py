@@ -13,7 +13,7 @@ import string
 import sys	
 from getDataFromDialogflow import *
 from getDataFromFirebase import *
-from pushMessageLine import *
+from ConnectLineAPI import *
 import config
 
 app = Flask(__name__)
