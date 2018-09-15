@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, make_response, jsonify,abort
+from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
 
