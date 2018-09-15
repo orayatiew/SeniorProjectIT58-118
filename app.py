@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, make_response, jsonify,abort
+from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
 
@@ -37,8 +37,12 @@ def webhook():
         res = pushMsg_score(req)
     if action == 'leavereq':
         res = leaveRequest(req)
-    if action == 'leavereqGetpar':
-        res = leavereqGetpar(req)
+    if action == 'pushReqToLf':
+        res = pushReqToLf(req)
+    if action == 'approve':
+        res = approveReq(req)
+    if action == 'reject':
+        res = rejectReq(req)
     else: 
         log.error('Unexpected action.') 
 
