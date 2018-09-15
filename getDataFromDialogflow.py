@@ -42,6 +42,9 @@ def getParamOutputcontext(req,par,index):
 def getParamQueryResult(req,par):
     parameter = req.get('queryResult').get('parameters').get(changePar(par))
     return str(parameter)
-   
+
+def getQueryRult(req):
+    text = req.get('queryResult').get('queryText')
+    return str(text)   
 
     
