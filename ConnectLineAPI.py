@@ -8,10 +8,12 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage,ConfirmTemplate,MessageAction
 )
 import config
 from getDataFromDialogflow import *
+from getDataFromFirebase import *
+
 app = Flask(__name__)
 log = app.logger
 
@@ -27,9 +29,6 @@ def pushmultiMessage(to,message):
     line_bot_api.multicast(to, TextSendMessage(text = message))
     return 'send success'
 
-def pushImageMessage(to,link):
-    line_bot_api.multicast(to, ImageSendMessage(original_content_url=link, preview_image_url=link))
-    return 'send success'
 
 def updateRichMenu(userid,role):
     if role == 'Students':
@@ -41,3 +40,55 @@ def updateRichMenu(userid,role):
 def getMessageContent(message_id):
      message_content = line_bot_api.get_message_content(message_id)
      return str(message_content)
+
+def pushMgsReqToLF(sub,date,userId,sec,leavetype):
+    lfid = getLFId(sub)
+    studentid = getIDFromMatchUser(userId)
+    name = getName("Students",studentid)
+    lname = getLname("Students",studentid)
+    to = getUserId("LF",lfid)
+    print(lfid)
+    print(to)
+    if leavetype == 'Business':
+        line_bot_api.push_message(to, TemplateSendMessage(
+        alt_text='Confirm template',
+        template=ConfirmTemplate(
+            text='นักศึกษา '+str(name)+' '+str(lname)+' '+str(sec)+'\nรหัส: '+str(studentid)+' ขอลากิจ\nวิชา '+str(sub)+'\nวันที่ '+str(date),
+            actions=[
+                MessageAction(
+                    label='อนุมัติ',
+                    text='อนุมัติคำขอลา ของนักศึกษารหัส:'+ str(studentid)
+                ),
+			    MessageAction(
+                    label='ไม่อนุมัติ',
+                    text='ไม่อนุมัติคำขอลา ของนักศึกษารหัส:' + str(studentid)
+                )
+            ]
+        )
+    ))
+    else:
+        lfid = getLFId(sub)
+        studentid = getIDFromMatchUser(userId)
+        name = getName("Students",studentid)
+        lname = getLname("Students",studentid)
+        to = getUserId("LF",lfid)
+        print(lfid)
+        print(to)
+        if leavetype == 'Sick':
+            line_bot_api.push_message(to, TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='นักศึกษา '+str(name)+' '+str(lname)+' '+str(sec)+'\nรหัส: '+str(studentid)+' ขอลาป่วย\nวิชา '+str(sub)+'\nวันที่ '+str(date),
+                actions=[
+                    MessageAction(
+                        label='อนุมัติ',
+                        text='อนุมัติคำขอลา ของนักศึกษารหัส:'+ str(studentid)
+                    ),
+			        MessageAction(
+                        label='ไม่อนุมัติ',
+                        text='ไม่อนุมัติคำขอลา ของนักศึกษารหัส:' + str(studentid)
+                    )
+                ]
+            )
+        ))
+    return 'send success'
