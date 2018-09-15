@@ -6,14 +6,14 @@ import config
 from getDataFromDialogflow import *
 from getDataFromFirebase import *
 from ConnectLineAPI import *
-
+from collections import OrderedDict
 
 app = Flask(__name__)
 log = app.logger
 
 def request_announcementLF(req):
     userId = getUserID(req) #def from getDataFromDialogflow
-    role = getDataMatchUsers(userId,'role') # request argument userid and parameters that you want to get
+    role = getRoleFromMatchUser(userId) # request argument userid and parameters that you want to get
 
     if str(role) == 'LF':
         announceType = getParamQueryResult(req,'type')
@@ -32,17 +32,26 @@ def request_announcementLF(req):
 def pushMsg_cancelclass(req):
     sub = getParamOutputcontext(req,'subject',0) #request parameters name 
     userId = getUserID(req)
-    ID = getDataMatchUsers(userId,'id')
-    IDcheck = getDataCourse(str(sub),'lfid')
+    ID = getIDFromMatchUser(userId)
+    IDcheck = getLFId(str(sub))
+    print(sub,ID,IDcheck)
     if ID == IDcheck:
         sec = getParamOutputcontext(req,'section',0)
         date = getParamOutputcontext(req,'date',0)
         date = str(date).replace("T12:00:00+00:00","")
-        stdArr= getDataCourse(str(sub),'student')
-        del stdArr[0]
-        print(stdArr)
+        print(sec)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nงดการเรียนการสอนวิชา '+str(sub) +'\nวันที่ '+str(date)
-        pushmultiMessage(stdArr,message)
+        if sec == 'sec A':
+            stdArr= getstudentSecA(str(sub))
+            pushmultiMessage(stdArr,message)
+        if sec == 'sec B':
+            stdArr= getstudentSecB(str(sub))
+            pushmultiMessage(stdArr,message)
+        else:
+            stdArrA= getstudentSecA(str(sub))
+            pushmultiMessage(stdArrA,message)
+            stdArrB= getstudentSecB(str(sub))
+            pushmultiMessage(stdArrB,message)
     else:
         return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
     
@@ -51,8 +60,8 @@ def pushMsg_cancelclass(req):
 def  pushMsg_compensatory(req):
     sub = getParamOutputcontext(req,'subject',0) #request parameters name 
     userId = getUserID(req)
-    ID = getDataMatchUsers(userId,'id')
-    IDcheck = getDataCourse(str(sub),'lfid')
+    ID = getIDFromMatchUser(userId)
+    IDcheck = getLFId(str(sub))
     if ID == IDcheck:
         sec = getParamOutputcontext(req,'section',0)
         date = getParamOutputcontext(req,'date',0)
@@ -85,3 +94,4 @@ def  pushMsg_score(req):
         return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
     
     return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
+

@@ -3,6 +3,7 @@ import json
 import os
 import pyrebase
 import config
+from collections import OrderedDict
 #--------------------connect firebase----------------------#
 firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
 db = firebase.database()
@@ -86,12 +87,22 @@ def getLFId(sub):
 
 def getstudentSecA(sub):
     studentSecA = db.child("Course").child(str(sub)).child("sectionA").get()
-    return studentSecA.val()
+    item1 = dict(studentSecA.val())
+    item2 = list(item1.keys())
+    userIds = []
+    for data in item2:
+        userIds.append((db.child("Course").child(str(sub)).child("sectionA").child(data).child("userId").get()).val())
+    return userIds
 
 def getstudentSecB(sub):
     studentSecB = db.child("Course").child(str(sub)).child("sectionB").get()
-    return studentSecB.val()
-
+    item1 = dict(studentSecB.val())
+    item2 = list(item1.keys())
+    userIds = []
+    for data in item2:
+        userIds.append((db.child("Course").child(str(sub)).child("sectionB").child(data).child("userId").get()).val())
+    return userIds
+        
         #----------------Push Method------------------#
 def pushUserIdIntoSubject(subject,section,userId):
     if section == 'A':
