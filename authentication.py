@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, make_response, jsonify,abort
+from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
 from smtplib import SMTPException
@@ -32,28 +32,25 @@ def auth_role(req):
 def authentications(req):
     ID = getParamOutputcontext(req,'id',1)  #studentID StaffID LFID --> id
     role = getParamOutputcontext(req,'role',1)
-    status_auth = getDataFollowRole(role,ID,'status')
+    status_auth = getStatusAuth(role,ID)
     print(role)
     print(ID)
     print(status_auth)
     if status_auth == 'no':
-        email = getDataFollowRole(role,ID,'email')
+        email = getEmail(role,ID)
         otp_no = random.randint(100000,999999)
         ref_no = random_refNO()
         print(email)
         statusSendMail = sendEmailAuth(email,otp_no,ref_no)
 
         if statusSendMail == 'Success':
-            data = {"otpNO" : otp_no}
-            updateFollowRole(role,ID,data)
+            updateOtpNo(role,ID,otp_no)
             print('OTP : '+ str(otp_no))
-            
             userId = getUserID(req)
-            #userId_data = {str(userId) : str(userId)}
             updateNewMatchUser(userId,role,ID)
             msg = 'ระบบทำการส่งรหัส OTP ไปยัง \n E-mail: ' + str(email) +'\n โดยมี ref No. ' + ref_no + '\n กรุณาระบุรหัส OTP ที่ได้รับด้วยค่ะ'
         else:
-            msg = 'ส่งไม่สำเร็จ' + statusSendMail
+            msg = 'ระบบไม่สามารถทำรายการได้ กรุณาทำรายการใหม่ภายหลังค่ะ'
     else:
 	    msg = 'คุณได้ทำการยืนยันตัวตนไปแล้วค่ะ'
     return msg
@@ -87,20 +84,36 @@ def sendEmailAuth (email,otpno,refno):
 def checkOTP(req):
     role = getParamOutputcontext(req,'role',0)
     userId = getUserID(req)
-    ID = getDataMatchUsers(str(userId),'id')
+    ID = getIDFromMatchUser(userId)
     otpDi = getParamOutputcontext(req,'otp',0)
-    otpDB = getDataFollowRole(role,ID,'otp')
+    otpDB = getotpNo(role,ID)
 
 
     if otpDB == otpDi:
         print('same')
         print(role)
         print(ID)
-        data = {"userId" : str(userId)}
-        updateFollowRole(role,ID,data)
+        updateUserId(role,ID,userId)
+        updateStatusAuth(role,ID)
         print('userId : '+ str(userId) )
         outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ' 
-        updateRichMenu(str(userId),role) #อย่าลืมแก้เมนูคนทั่วไปเอา ยืนยันตัวตนมาใส่
+        updateRichMenu(str(userId),role) 
+        deleteOtpNo(role,ID)
+        if role == 'Students':
+            #add userId into Subject
+            subjects = getSubjects(role,ID)
+            section = getSection(role,ID)
+            print(subjects)
+            print(section)
+            del subjects[0]
+            for subject in subjects:
+                pushUserIdIntoSubject(str(subject),str(section),userId)
+                print(subject)
+            #add userId into year
+            year = getYear(role,ID)
+            pushUserIdIntoYear(year,userId)
+        else:
+            print('Not Students')
     else:
         print('not same')
         print("OTP usr: "+otpDi)
