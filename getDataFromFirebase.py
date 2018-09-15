@@ -3,53 +3,147 @@ import json
 import os
 import pyrebase
 import config
-
+#--------------------connect firebase----------------------#
 firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
 db = firebase.database()
+#----------------------------------------------------------#
 
 app = Flask(__name__)
 log = app.logger
 
-def changePar(par):
-    if par == 'id':
-        param = 'ID'
-        return str(param)
-    if par == 'lfid':
-        param = 'lf_id'
-        return str(param)
-    if par == 'student':
-        param = 'students'
-        return str(param)
-    if par == 'status':
-        param = 'status_auth'
-        return str(param)
-    if par == 'otp':
-        param = 'otpNO'
-        return str(param)
+#---------------------LF/Student/Staff----------------------#
+          #--------------GET Method-----------------#
+def getName(role,ID):
+    name = db.child(str(role)).child(str(ID)).child("name").get()
+    return name.val()
+
+def getLname(role,ID):
+    lname = db.child(str(role)).child(str(ID)).child("lname").get()
+    return lname.val()
+
+def getEmail(role,ID):
+    email = db.child(str(role)).child(str(ID)).child("email").get()
+    return email.val()
+
+def getotpNo(role,ID):
+    otpNo = db.child(str(role)).child(str(ID)).child("otpNO").get()
+    return otpNo.val()
+
+def getStatusAuth(role,ID):
+    status = db.child(str(role)).child(str(ID)).child("status_auth").get()
+    return status.val()
+
+def getUserId(role,ID):
+    userId = db.child(str(role)).child(str(ID)).child("userId").get()
+    return userId.val()
+
+def getSection(role,ID):
+    section = db.child(str(role)).child(str(ID)).child("section").get()
+    return section.val()
+
+def getYear(role,ID):
+    year = db.child(str(role)).child(str(ID)).child("year").get()
+    return year.val()
+
+def getSubjects(role,ID):
+    subjects = db.child(str(role)).child(str(ID)).child("subjects").get()
+    return subjects.val()
+
+          #---------------Update Method------------------#
+def updateOtpNo(role,ID,otp):
+    data = {"otpNO": str(otp)}
+    db.child(str(role)).child(str(ID)).update(data)
+    print('Update success')
+    return 'Update success'
+
+def updateUserId(role,ID,userId):
+    data = {"userId": str(userId)}
+    db.child(str(role)).child(str(ID)).update(data)
+    print('Update success')
+    return 'Update success'
+
+def updateStatusAuth(role,ID):
+    data = {"status_auth": 'yes'}
+    db.child(str(role)).child(str(ID)).update(data)
+    print('Update success')
+    return 'Update success'
+
+        #----------------Delete Method---------------#
+def deleteOtpNo(role,ID):
+    db.child(str(role)).child(str(ID)).child("otpNO").remove()
+    print('Delete success')
+    return 'Delete success'
+
+#--------------------------Course---------------------------#
+         #---------------GET Method---------------#
+def getnameSubject(sub):
+    subjectName = db.child("Course").child(str(sub)).child("name").get()
+    return subjectName.val()
+
+def getLFId(sub):
+    LFId = db.child("Course").child(str(sub)).child("lf_id").get()
+    return LFId.val()
+
+def getstudentSecA(sub):
+    studentSecA = db.child("Course").child(str(sub)).child("sectionA").get()
+    return studentSecA.val()
+
+def getstudentSecB(sub):
+    studentSecB = db.child("Course").child(str(sub)).child("sectionB").get()
+    return studentSecB.val()
+
+        #----------------Push Method------------------#
+def pushUserIdIntoSubject(subject,section,userId):
+    if section == 'A':
+        data = {"userId": str(userId)}
+        db.child("Course").child(str(subject)).child("sectionA").push(data)
+        print('Push success')
     else:
-        return str(par)
+        data = {"userId": str(userId)}
+        db.child("Course").child(str(subject)).child("sectionB").push(data)
+        print('Push success')
+    return 'Push success'
 
-def getDataMatchUsers(userid,par):
-    data = db.child("MatchUsers").child(str(userid)).child(changePar(par)).get()
-    return str(data.val())
+#--------------------------MatchUsers------------------------#
+         #----------------Get Method-------------------#
+def getIDFromMatchUser(userId):
+    ID = db.child("MatchUsers").child(str(userId)).child("ID").get()
+    return ID.val()
 
-def getDataCourse(sub,par):
-    data = db.child("Course").child(str(sub)).child(changePar(par)).get()
-    return data.val()
-
-def getDataFollowRole(role,ID,par):
-    data = db.child(role).child(ID).child(changePar(par)).get() 
-    return str(data.val())
-
-def updateFollowRole(role,ID,data):
-    db.child(role).child(ID).update(data)
-    return 'update success'
-
+def getRoleFromMatchUser(userId):
+    role = db.child("MatchUsers").child(str(userId)).child("role").get()
+    return role.val()
+         #----------------Update Method----------------#
 def updateNewMatchUser(userId,role,ID):
      matchUserdata = {
                "MatchUsers/"+str(userId): {
                      "role": role,
 					 "ID":ID
             }}
-     db.update(matchUserdata)
-     return 'update success'
+     db.update(matchUserdata) 
+     return 'update success' 
+
+#----------------------------Years---------------------------#
+             #------------Push Method---------------#
+def pushUserIdIntoYear(year,userId):
+    data = {"userId": str(userId)}
+    db.child("Years").child(str(year)).push(data)
+    print('Push success')
+    return 'Push success'
+
+	         #------------Get Method---------------#
+def getUserIdFreshy():
+    userIdFreshy = db.child("Years").child("Freshy").child("userId").get()
+    return userIdFreshy.val()
+
+def getUserIdSophomore():
+    userIdFreshy = db.child("Years").child("Sophomore").child("userId").get()
+    return userIdFreshy.val()
+
+def getUserIdJunior():
+    userIdFreshy = db.child("Years").child("Junior").child("userId").get()
+    return userIdFreshy.val()
+
+def getUserIdSenior():
+    userIdFreshy = db.child("Years").child("Senior").child("userId").get()
+    return userIdFreshy.val()
