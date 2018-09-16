@@ -43,6 +43,8 @@ def webhook():
         res = approveReq(req)
     if action == 'reject':
         res = rejectReq(req)
+    if action == 'announcementTopic':
+        res = announcementTopic(req)
     else: 
         log.error('Unexpected action.') 
 

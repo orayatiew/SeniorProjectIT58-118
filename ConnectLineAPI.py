@@ -8,7 +8,8 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage,ConfirmTemplate,MessageAction
+    MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage,ConfirmTemplate,MessageAction,
+    QuickReply,QuickReplyButton
 )
 import config
 from getDataFromDialogflow import *
@@ -92,3 +93,12 @@ def pushMgsReqToLF(sub,date,userId,sec,leavetype):
             )
         ))
     return 'send success'
+
+def pushMsgQuicReply(role,userId):
+    if role == 'LF':
+        line_bot_api.push_message(userId, TextSendMessage(text='เลือกหัวข้อที่จะประกาศค่ะ',
+                               quick_reply=QuickReply(items=[
+                                   QuickReplyButton(action=MessageAction(label="test", text="test")),
+                                   QuickReplyButton(action=MessageAction(label="test1", text="test2"))
+                               ])))
+    return 'send quick reply'

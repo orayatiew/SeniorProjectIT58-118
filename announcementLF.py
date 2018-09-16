@@ -24,8 +24,6 @@ def request_announcementLF(req):
             return 'ต้องการแจ้งชดเชยการเรียนการสอนวิชาอะไรคะ'
         if announceType == 'score':
             return 'ต้องการแจ้งคะแนนวิชาอะไรคะ'
-        else:
-            return 'ต้องการประกาศหัวข้ออะไรคะ'
     else:
         return 'ผู้ช่วยสอนเท่านั้นที่สามารถใช้งานฟังก์ชันนี้ได้ค่ะ'
 
@@ -47,7 +45,7 @@ def pushMsg_cancelclass(req):
         if sec == 'sec B':
             stdArr= getstudentSecB(str(sub))
             pushmultiMessage(stdArr,message)
-        else:
+        if sec == 'All':
             stdArrA= getstudentSecA(str(sub))
             pushmultiMessage(stdArrA,message)
             stdArrB= getstudentSecB(str(sub))
@@ -66,11 +64,21 @@ def  pushMsg_compensatory(req):
         sec = getParamOutputcontext(req,'section',0)
         date = getParamOutputcontext(req,'date',0)
         date = str(date).replace("T12:00:00+00:00","")
-        stdArr= getDataCourse(str(sub),'student')
-        del stdArr[0]
-        print(stdArr)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nชดเชยเวลาเรียนวิชา '+str(sub) +'\nวันที่ '+str(date)
-        pushmultiMessage(stdArr,message)
+        if sec == 'sec A':
+            stdArr= getstudentSecA(str(sub))
+            pushmultiMessage(stdArr,message)
+            print('if 1')
+        if sec == 'sec B':
+            stdArr= getstudentSecB(str(sub))
+            pushmultiMessage(stdArr,message)
+            print('if 2')
+        if sec == 'All':
+            stdArrA= getstudentSecA(str(sub))
+            pushmultiMessage(stdArrA,message)
+            stdArrB= getstudentSecB(str(sub))
+            pushmultiMessage(stdArrB,message)
+            print('if 3')
     else:
         return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
     
@@ -79,19 +87,36 @@ def  pushMsg_compensatory(req):
 def  pushMsg_score(req):
     sub = getParamOutputcontext(req,'subject',0) #request parameters name 
     userId = getUserID(req)
-    ID = getDataMatchUsers(userId,'id')
-    IDcheck = getDataCourse(str(sub),'lfid')
+    ID = getIDFromMatchUser(userId)
+    IDcheck = getLFId(str(sub))
     if ID == IDcheck:
         sec = getParamOutputcontext(req,'section',0)
         scoreType = getParamOutputcontext(req,'scoretype',0)
         channel = getParamOutputcontext(req,'channel',0)
-        stdArr= getDataCourse(str(sub),'student')
-        del stdArr[0]
-        print(stdArr)
+        print(sec)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nคะแนนสอบ'+str(scoreType)+'วิชา '+str(sub) +'ประกาศแล้วค่ะ\nสามารถดูได้ที่'+str(channel)
-        pushmultiMessage(stdArr,message)
+        if sec == 'sec A':
+            stdArr= getstudentSecA(str(sub))
+            pushmultiMessage(stdArr,message)
+        if sec == 'sec B':
+            stdArr= getstudentSecB(str(sub))
+            pushmultiMessage(stdArr,message)
+        if sec == 'All':
+            stdArrA= getstudentSecA(str(sub))
+            pushmultiMessage(stdArrA,message)
+            stdArrB= getstudentSecB(str(sub))
+            pushmultiMessage(stdArrB,message)
     else:
         return 'ต้องเป็นผู้ช่วยสอนประจำวิชาเท่านั้นค่ะ ถึงจะสามารถเเจ้งเตือนได้'
     
     return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
 
+def  announcementTopic(req):
+    userId = getUserID(req)
+    role = getRoleFromMatchUser(userId)
+    ID = getIDFromMatchUser(userId)
+    if role == 'LF':
+	    pushMsgQuicReply(role,userId)
+    return ' '
+    
+    
