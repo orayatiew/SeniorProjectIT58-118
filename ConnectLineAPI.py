@@ -34,8 +34,10 @@ def pushmultiMessage(to,message):
 def updateRichMenu(userid,role):
     if role == 'Students':
         line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_STUDENT)
-    else:
-        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_STAFF_LF)
+    if role == 'LF':
+        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_LF)
+    if role == 'Staffs':
+        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_STAFF)
     return 'Menu changed'
 
 def getMessageContent(message_id):
@@ -94,7 +96,7 @@ def pushMgsReqToLF(sub,date,userId,sec,leavetype):
         ))
     return 'send success'
 
-def pushMsgQuicReply(role,userId):
+def pushMsgQuickReply(role,userId):
     if role == 'LF':
         line_bot_api.push_message(userId, TextSendMessage(text='เลือกหัวข้อที่จะประกาศค่ะ',
                                quick_reply=QuickReply(items=[
@@ -102,3 +104,23 @@ def pushMsgQuicReply(role,userId):
                                    QuickReplyButton(action=MessageAction(label="test1", text="test2"))
                                ])))
     return 'send quick reply'
+
+def pushMsgConfirmMissedClass(userId,sub,ID,message):
+    name = getName("Students",ID)
+    lname = getLname("Students",ID)
+    line_bot_api.push_message(userId, TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='แจ้งเตือน นักศึกษา '+str(name)+' '+str(lname)+' '+'\nรหัส: '+str(ID)+' ขาดเรียน\nวิชา '+str(sub)+'\n'+str(message),
+                actions=[
+                    MessageAction(
+                        label='ยืนยัน',
+                        text='ยืนยันเเจ้งเตือนการขาดเรียน'
+                    ),
+			        MessageAction(
+                        label='ยกเลิก',
+                        text='ยกเลิกการทำรายการ'
+                    )
+                ]
+            )
+        ))

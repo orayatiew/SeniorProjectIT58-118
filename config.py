@@ -17,7 +17,9 @@ LINEBOTAPI_SECRETTOKEN = WebhookHandler('22026c4321303e7bc5a36ae01728b77e')
 
 RICHMENU_ID_STUDENT = 'richmenu-fad9e175d271b0a0781c53249f1e5c1c'
 
-RICHMENU_ID_STAFF_LF =  'richmenu-a248b5ee837dc5c60c71e9bc41a9bd01'
+RICHMENU_ID_LF =  'richmenu-78d84c74efaa660cfeb5410d5a714807'
+
+RICHMENU_ID_STAFF = ''
 
 EMAIL_SENDER = 'seniorproject.5818@gmail.com'
 PW_SENDER = 'project5818'

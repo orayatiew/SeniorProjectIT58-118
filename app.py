@@ -35,6 +35,12 @@ def webhook():
         res = pushMsg_compensatory(req)
     if action == 'score':
         res = pushMsg_score(req)
+    if action == 'quiz':
+        res = pushMsg_quiz(req)
+    if action =='missedClass':
+        res = comfirm_MissedClass(req)
+    if action =='pushMissClass':
+        res = pushMsg_MissClass(req) #here
     if action == 'leavereq':
         res = leaveRequest(req)
     if action == 'pushReqToLf':
@@ -43,8 +49,6 @@ def webhook():
         res = approveReq(req)
     if action == 'reject':
         res = rejectReq(req)
-    if action == 'announcementTopic':
-        res = announcementTopic(req)
     else: 
         log.error('Unexpected action.') 
 
