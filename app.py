@@ -40,7 +40,11 @@ def webhook():
     if action =='missedClass':
         res = comfirm_MissedClass(req)
     if action =='pushMissClass':
-        res = pushMsg_MissClass(req) #here
+        res = pushMsg_MissClass(req)
+    if action == 'confirmNews':
+        res = comfirm_News(req) 
+    if action == 'pushNews':
+        res = pushMsg_News(req)
     if action == 'leavereq':
         res = leaveRequest(req)
     if action == 'pushReqToLf':

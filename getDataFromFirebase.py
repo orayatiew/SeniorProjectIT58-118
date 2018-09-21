@@ -96,6 +96,7 @@ def getstudentSecA(sub):
 
 def getstudentSecB(sub):
     studentSecB = db.child("Course").child(str(sub)).child("sectionB").get()
+    print(studentSecB.val())
     item1 = dict(studentSecB.val())
     item2 = list(item1.keys())
     userIds = []

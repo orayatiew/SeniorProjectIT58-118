@@ -124,3 +124,21 @@ def pushMsgConfirmMissedClass(userId,sub,ID,message):
                 ]
             )
         ))
+
+def pushMsgConfirmNews(userId,subject,date,content,section,title):
+    line_bot_api.push_message(userId, TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='หัวข้อ: '+str(title)+'\nวิชา '+str(subject)+'\nวันที่'+str(date)+'\n'+str(content)+'\nแจ้งนักศึกษา '+str(section),
+                actions=[
+                    MessageAction(
+                        label='ยืนยัน',
+                        text='ยืนยันเเจ้งเตือนข่าวสาร'
+                    ),
+			        MessageAction(
+                        label='ยกเลิก',
+                        text='ยกเลิกการทำรายการ'
+                    )
+                ]
+            )
+        ))
