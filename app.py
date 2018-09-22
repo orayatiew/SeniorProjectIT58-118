@@ -9,6 +9,8 @@ from ConnectLineAPI import *
 from authentication import *
 from announcementLF import *
 from LeaveRequest import *
+from staffAnswer import *
+
 app = Flask(__name__)
 log = app.logger
 
@@ -53,6 +55,12 @@ def webhook():
         res = approveReq(req)
     if action == 'reject':
         res = rejectReq(req)
+    if action == 'collectQuestion':
+        res = collectQuestion(req)
+    if action == 'staffAnswer':
+        res = staffAnswer(req)
+    if action == 'pushAnsToUser':
+        res = pushAnsToUser(req)
     else: 
         log.error('Unexpected action.') 
 

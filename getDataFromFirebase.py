@@ -2,8 +2,13 @@ from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
 import pyrebase
+import random
+from random import randint
+import string 
+import sys	
 import config
 from collections import OrderedDict
+import secrets
 #--------------------connect firebase----------------------#
 firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
 db = firebase.database()
@@ -159,3 +164,67 @@ def getUserIdJunior():
 def getUserIdSenior():
     userIdFreshy = db.child("Years").child("Senior").child("userId").get()
     return userIdFreshy.val()
+#----------------------------status_staff---------------------------#
+def updateStatusDefault(userId):
+    data = {"userId": userId,"amount": 0}
+    db.child("status_Staff").child("online").push(data)
+    print('updateStatusDefault success')
+    return 'updateStatusDefault success'
+
+def getUserIdStaffAnswer():
+    anwser = db.child("status_Staff").child("online").get()
+    item1 = dict(anwser.val())
+    item2 = list(item1.keys())
+    length = len(item2)
+    print(item2)
+    userIds = []
+    userId = ''
+    amount = ''
+    if length == 1:
+        del item2[length-1]
+        anwser = db.child("status_Staff").child("busy").get()
+        item1 = dict(anwser.val())
+        item2 = list(item1.keys()) 
+        for index in range(len(item2)):
+            amount = int((db.child("status_Staff").child("busy").child(item2[index]).child("amount").get()).val())
+            if amount < 2:
+                userIds.append((db.child("status_Staff").child("busy").child(item2[index]).child("userId").get()).val())
+                print(userIds)
+                userId = random.choice(userIds)
+    else:
+        del item2[length-1]
+        for index in range(len(item2)):
+            amount = int((db.child("status_Staff").child("online").child(item2[index]).child("amount").get()).val())
+            if amount < 2:
+                userIds.append((db.child("status_Staff").child("online").child(item2[index]).child("userId").get()).val())
+                print(userIds)
+                userId = random.choice(userIds)
+    return userId
+#----------------------------Question---------------------------#
+def updateQuestion(sender,question,refno):
+    print(refno)
+    data = {
+               "Questions/"+str(refno): {
+                     "sender": sender,
+					 "question":question
+            }}
+    db.update(data) 
+    return 'update success' 
+
+def updateAns(refno,ans):
+    data = {"ans": ans}
+    db.child("Questions").child(str(refno)).update(data)
+    print('Update success')
+    return 'Update success'
+
+def getQuestion(refno):
+    question = db.child("Questions").child(str(refno)).child("question").get()
+    return question.val()
+
+def getsender(refno):
+    sender = db.child("Questions").child(str(refno)).child("sender").get()
+    return sender.val()
+
+def getAns(refno):
+    answer = db.child("Questions").child(str(refno)).child("ans").get()
+    return answer.val()

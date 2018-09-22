@@ -37,7 +37,7 @@ def updateRichMenu(userid,role):
     if role == 'LF':
         line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_LF)
     if role == 'Staffs':
-        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_STAFF)
+        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_LF)
     return 'Menu changed'
 
 def getMessageContent(message_id):
@@ -142,3 +142,41 @@ def pushMsgConfirmNews(userId,subject,date,content,section,title):
                 ]
             )
         ))
+
+def pushQuestionToStaff(answer,question,refno):
+    
+    line_bot_api.push_message(answer, TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='คำถาม: '+str(question),
+                actions=[
+                    MessageAction(
+                        label='ตอบคำถาม',
+                        text='ตอบคำถาม refno: '+refno
+                    ),
+			        MessageAction(
+                        label='ส่งต่อ',
+                        text='ต้องการส่งคำถามไปยังเจ้าหน้าที่คนอื่น'
+                    )
+                ]
+            )
+        ))
+
+def pushConfirmToStaff(ans,userId,refno):
+    question = getQuestion(refno)
+    line_bot_api.push_message(userId, TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='คำถาม: '+str(question) + '\nคำตอบ: '+str(ans),
+                actions=[
+                    MessageAction(
+                        label='ยืนยัน',
+                        text='ยืนยันการตอบคำถาม'
+                    ),
+			        MessageAction(
+                        label='แกไข้',
+                        text='ต้องการแก้ไขคำตอบ'
+                    )
+                ]
+            )
+        ))  

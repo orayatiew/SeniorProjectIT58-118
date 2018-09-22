@@ -112,6 +112,8 @@ def checkOTP(req):
             #add userId into year
             year = getYear(role,ID)
             pushUserIdIntoYear(year,userId)
+        if role == 'Staffs':
+            updateStatusDefault(userId)
         else:
             print('Not Students')
     else:
