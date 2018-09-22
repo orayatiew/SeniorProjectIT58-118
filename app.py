@@ -61,6 +61,8 @@ def webhook():
         res = staffAnswer(req)
     if action == 'pushAnsToUser':
         res = pushAnsToUser(req)
+    if action == 'changeStatus':
+        res = changeStatus(req)
     else: 
         log.error('Unexpected action.') 
 

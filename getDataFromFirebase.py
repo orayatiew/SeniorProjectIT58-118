@@ -130,15 +130,34 @@ def getIDFromMatchUser(userId):
 def getRoleFromMatchUser(userId):
     role = db.child("MatchUsers").child(str(userId)).child("role").get()
     return role.val()
+
+def getStatusFrommatchUser(userId):
+    status =  db.child("MatchUsers").child(str(userId)).child("status").get()
+    return status.val()
          #----------------Update Method----------------#
 def updateNewMatchUser(userId,role,ID):
-     matchUserdata = {
-               "MatchUsers/"+str(userId): {
-                     "role": role,
-					 "ID":ID
-            }}
-     db.update(matchUserdata) 
-     return 'update success' 
+     if role == 'Staffs':
+         matchUserdata = {
+                   "MatchUsers/"+str(userId): {
+                         "role": role,
+					     "ID":ID,
+                         "status": 'online'
+                }}
+         db.update(matchUserdata) 
+     else:
+         matchUserdata = {
+                   "MatchUsers/"+str(userId): {
+                         "role": role,
+					     "ID":ID
+                }}
+         db.update(matchUserdata) 
+     return 'update success'
+
+def updateStatusStaff(userId,status):
+    data = {"status": str(status)}
+    db.child("MatchUsers").child(str(userId)).update(data)
+    print('Update success')
+    return 'Update success'    
 
 #----------------------------Years---------------------------#
              #------------Push Method---------------#
@@ -165,11 +184,65 @@ def getUserIdSenior():
     userIdFreshy = db.child("Years").child("Senior").child("userId").get()
     return userIdFreshy.val()
 #----------------------------status_staff---------------------------#
-def updateStatusDefault(userId):
-    data = {"userId": userId,"amount": 0}
-    db.child("status_Staff").child("online").push(data)
+def updateStatusDefault(userId,staffid):
+    data = {
+               "status_Staff/online/"+str(staffid): {
+                     "amount": 0,
+					 "userId":str(userId)
+            }}
+    db.update(data) 
     print('updateStatusDefault success')
     return 'updateStatusDefault success'
+
+def getAmount(staffid,status):
+    amonut = db.child("status_Staff").child(str(status)).child(str(staffid)).child("amount").get()
+    return amonut.val()
+
+
+def deleteStaffOnline(staffid):
+    db.child("status_Staff").child("online").child(str(staffid)).remove()
+    print('Delete success')
+    return 'Delete success' 
+
+def deleteStaffBusy(staffid):
+    db.child("status_Staff").child("busy").child(str(staffid)).remove()
+    print('Delete success')
+    return 'Delete success' 
+
+def deleteStaffIgnore(staffid):
+    db.child("status_Staff").child("ignore").child(str(staffid)).remove()
+    print('Delete success')
+    return 'Delete success'
+
+def addStaffOnline(staffid,userId,amount):
+    data = {
+               "status_Staff/online/"+str(staffid): {
+                     "amount": amount,
+					 "userId":str(userId)
+            }}
+    db.update(data) 
+    print('addStaffOnline success')
+    return 'addStaffOnline success'
+
+def addStaffBusy(staffid,userId,amount):
+    data = {
+               "status_Staff/busy/"+str(staffid): {
+                     "amount": amount,
+					 "userId":str(userId)
+            }}
+    db.update(data) 
+    print('addStaffBusy success')
+    return 'addStaffBusy success'
+
+def addStaffIgnore(staffid,userId,amount):
+    data = {
+               "status_Staff/ignore/"+str(staffid): {
+                     "amount": amount,
+					 "userId":str(userId)
+            }}
+    db.update(data) 
+    print('addStaffIgnore success')
+    return 'addStaffIgnore success'
 
 def getUserIdStaffAnswer():
     anwser = db.child("status_Staff").child("online").get()
@@ -181,7 +254,7 @@ def getUserIdStaffAnswer():
     userId = ''
     amount = ''
     if length == 1:
-        del item2[length-1]
+        del item2[0]
         anwser = db.child("status_Staff").child("busy").get()
         item1 = dict(anwser.val())
         item2 = list(item1.keys()) 
@@ -192,7 +265,7 @@ def getUserIdStaffAnswer():
                 print(userIds)
                 userId = random.choice(userIds)
     else:
-        del item2[length-1]
+        del item2[0]
         for index in range(len(item2)):
             amount = int((db.child("status_Staff").child("online").child(item2[index]).child("amount").get()).val())
             if amount < 2:
@@ -228,3 +301,8 @@ def getsender(refno):
 def getAns(refno):
     answer = db.child("Questions").child(str(refno)).child("ans").get()
     return answer.val()
+
+def deleteQuestion(refno):
+    db.child("Questions").child(str(refno)).remove()
+    print('Delete success')
+    return 'Delete success'    

@@ -37,7 +37,7 @@ def updateRichMenu(userid,role):
     if role == 'LF':
         line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_LF)
     if role == 'Staffs':
-        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_LF)
+        line_bot_api.link_rich_menu_to_user(userid, config.RICHMENU_ID_STAFF)
     return 'Menu changed'
 
 def getMessageContent(message_id):
