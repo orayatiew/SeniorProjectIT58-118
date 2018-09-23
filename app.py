@@ -10,6 +10,7 @@ from authentication import *
 from announcementLF import *
 from LeaveRequest import *
 from staffAnswer import *
+from announcementStaff import *
 
 app = Flask(__name__)
 log = app.logger

@@ -190,6 +190,43 @@ def getUserIdJunior():
 def getUserIdSenior():
     userIdFreshy = db.child("Years").child("Senior").child("userId").get()
     return userIdFreshy.val()
+
+def getstudentFreshy():
+    students = db.child("Years").child("Freshy").get()
+    item1 = dict(students.val())
+    item2 = list(item1.keys())
+    userIds = []
+    for data in item2:
+        userIds.append((db.child("Years").child("Freshy").child(data).child("userId").get()).val())
+    return userIds
+
+def getstudentSophomore():
+    students = db.child("Years").child("Sophomore").get()
+    item1 = dict(students.val())
+    item2 = list(item1.keys())
+    userIds = []
+    for data in item2:
+        userIds.append((db.child("Years").child("Sophomore").child(data).child("userId").get()).val())
+    return userIds
+
+def getstudentJunior():
+    students = db.child("Years").child("Junior").get()
+    item1 = dict(students.val())
+    item2 = list(item1.keys())
+    userIds = []
+    for data in item2:
+        userIds.append((db.child("Years").child("Junior").child(data).child("userId").get()).val())
+    return userIds
+
+def getstudentSenior():
+    students = db.child("Years").child("Senior").get()
+    item1 = dict(students.val())
+    item2 = list(item1.keys())
+    userIds = []
+    for data in item2:
+        userIds.append((db.child("Years").child("Senior").child(data).child("userId").get()).val())
+    return userIds
+
 #----------------------------status_staff---------------------------#
 def updateStatusDefault(userId,staffid):
     data = {
