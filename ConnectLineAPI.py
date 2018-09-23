@@ -163,8 +163,8 @@ def pushQuestionToStaff(answer,question,refno):
         ))
     return 'success'
 
-def pushConfirmToStaff(ans,userId,refno):
-    question = getQuestion(refno)
+def pushConfirmToStaff(ans,userId,refno,question):
+    print('pushconfirm'+refno)
     line_bot_api.push_message(userId, TemplateSendMessage(
             alt_text='Confirm template',
             template=ConfirmTemplate(
@@ -180,17 +180,18 @@ def pushConfirmToStaff(ans,userId,refno):
                     )
                 ]
             )
-        ))  
+        ))
+    return 'sendConfirmAlready'
 
 def pushConfirmCallQuestion(userId,amount):
     line_bot_api.push_message(userId, TemplateSendMessage(
             alt_text='Confirm template',
             template=ConfirmTemplate(
-                text='มีคำถามที่ยังไม่ถูกส่งไปยังเจ้าหน้าที่อยู่ '+str(amount) + 'คำถาม\nคุณต้องการเรียกดูหรือไม่',
+                text='มีคำถามที่ยังไม่ถูกส่งไปยังเจ้าหน้าที่อยู่ '+str(amount) + ' คำถาม\nคุณต้องการเรียกดูหรือไม่',
                 actions=[
                     MessageAction(
                         label='ทั้งหมด',
-                        text='ต้องการเรียกดูคำถามทั้งหมด'
+                        text='ต้องการเรียกดูคำถามทั้งหมด '+str(amount)+' คำถาม' 
                     ),
 			        MessageAction(
                         label='กำหนดจำนวน',
@@ -198,4 +199,4 @@ def pushConfirmCallQuestion(userId,amount):
                     )
                 ]
             )
-        )) 
+        ))

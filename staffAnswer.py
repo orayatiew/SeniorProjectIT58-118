@@ -25,21 +25,23 @@ def collectQuestion(req):
         print('answer: '+ answer)
         updateQuestion(sender,question,refno)
         print('collect success')
-    status = pushQuestionToStaff(answer,question,refno)
-    if status == 'success':
-        state = 'wait'
-        updateStateQuestion(state,refno)
+        status = pushQuestionToStaff(answer,question,refno)
+        if status == 'success':
+            state = 'wait'
+            updateStateQuestion(state,refno)
     return ''
 
 def staffAnswer(req):
     userId_staff = getUserID(req)
     ans = getQueryRult(req)
     refno = getParamOutputcontext(req,"code",0)
-    status = updateAns(refno,ans)
-    if status == 'Update success':
+    print(refno)
+    updateAns(refno,ans)
+    question = getQuestion(str(refno))
+    status = pushConfirmToStaff(ans,userId_staff,refno,question)
+    if status == 'sendConfirmAlready':
         state = 'yes'
         updateStateQuestion(state,refno)
-    pushConfirmToStaff(ans,userId_staff,refno)
     return ''
 
 def pushAnsToUser(req):
@@ -103,6 +105,15 @@ def changeStatus(req):
  
 def callQuestions(req):
     userId = getUserID(req)
-    amount = checkAmountQuestions()
+    amount = int(checkAmountQuestions())
+    if amount > 0:
+        pushConfirmCallQuestion(userId,amount)
+    else:
+        return 'ไม่มีคำถามที่ยังไม่ถูกส่งไปยังเจ้าหน้าที่'
+    return ''
 
+def callquestionAll(req):
+    userId = getUserID(req)
+    amount = getParamOutputcontext(req,"number",0)
+    getQuestionAll(amount,userId)
     return ''

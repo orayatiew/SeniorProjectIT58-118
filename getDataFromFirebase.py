@@ -9,6 +9,7 @@ import sys
 import config
 from collections import OrderedDict
 import secrets
+from ConnectLineAPI import *
 #--------------------connect firebase----------------------#
 firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
 db = firebase.database()
@@ -329,5 +330,23 @@ def checkAmountQuestions():
         state = (db.child("Questions").child(item2[index]).child("state").get()).val()
         if state == 'no':
             amount += 1
+    print(amount)
+    return amount
+
+def getQuestionAll(amount,userId):
+    questions = db.child("Questions").get()
+    item1 = dict(questions.val())
+    item2 = list(item1.keys())
+    length = len(item2)
+    del item2[length-1]
+    print(item2)
+    amount = 0
+    for index in range(len(item2)):
+        question = (db.child("Questions").child(item2[index]).child("question").get()).val()
+        state = (db.child("Questions").child(item2[index]).child("state").get()).val()
+        if state == 'no':
+            pushQuestionToStaff(userId,question,item2[index])
+            state = 'wait'
+            updateStateQuestion(state,item2[index])
     print(amount)
     return amount
