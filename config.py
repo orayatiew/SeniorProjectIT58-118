@@ -19,7 +19,7 @@ RICHMENU_ID_STUDENT = 'richmenu-fad9e175d271b0a0781c53249f1e5c1c'
 
 RICHMENU_ID_LF =  'richmenu-78d84c74efaa660cfeb5410d5a714807'
 
-RICHMENU_ID_STAFF = 'richmenu-e131e447b4f41fb28f3bcaa649ed1ab4'
+RICHMENU_ID_STAFF = 'richmenu-31c8843bf3458d2b460e5f599cdcc596'
 
 EMAIL_SENDER = 'seniorproject.5818@gmail.com'
 PW_SENDER = 'project5818'

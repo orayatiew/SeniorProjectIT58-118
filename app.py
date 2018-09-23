@@ -63,6 +63,10 @@ def webhook():
         res = pushAnsToUser(req)
     if action == 'changeStatus':
         res = changeStatus(req)
+    if action == 'callquestion':
+        res = callQuestions(req)
+    if action == 'callquestionAll'
+        res = callquestionAll(req)
     else: 
         log.error('Unexpected action.') 
 

@@ -17,19 +17,28 @@ def collectQuestion(req):
     refno = random_refNO()
     sender = getUserID(req)
     question = getQueryRult(req)
-    updateQuestion(sender,question,refno)
-    print('collect success')
     answer = getUserIdStaffAnswer()
-    print('answer: '+ answer)
-    pushQuestionToStaff(answer,question,refno)
-
+    if answer == 'staff ignore':
+        updateQuestion(sender,question,refno)
+        print('collect success')
+    else:
+        print('answer: '+ answer)
+        updateQuestion(sender,question,refno)
+        print('collect success')
+    status = pushQuestionToStaff(answer,question,refno)
+    if status == 'success':
+        state = 'wait'
+        updateStateQuestion(state,refno)
     return ''
 
 def staffAnswer(req):
     userId_staff = getUserID(req)
     ans = getQueryRult(req)
     refno = getParamOutputcontext(req,"code",0)
-    updateAns(refno,ans)
+    status = updateAns(refno,ans)
+    if status == 'Update success':
+        state = 'yes'
+        updateStateQuestion(state,refno)
     pushConfirmToStaff(ans,userId_staff,refno)
     return ''
 
@@ -90,4 +99,10 @@ def changeStatus(req):
             addStaffIgnore(staffid,userId,amount)
             updateStatusStaff(userId,status)
             return 'สถานะของคุณเปลี่ยนเป็น Ignore เรียนร้อยเเล้วค่ะ'     
-    
+ 
+ 
+def callQuestions(req):
+    userId = getUserID(req)
+    amount = checkAmountQuestions()
+
+    return ''

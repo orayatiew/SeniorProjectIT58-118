@@ -258,12 +258,16 @@ def getUserIdStaffAnswer():
         anwser = db.child("status_Staff").child("busy").get()
         item1 = dict(anwser.val())
         item2 = list(item1.keys()) 
-        for index in range(len(item2)):
-            amount = int((db.child("status_Staff").child("busy").child(item2[index]).child("amount").get()).val())
-            if amount < 2:
-                userIds.append((db.child("status_Staff").child("busy").child(item2[index]).child("userId").get()).val())
-                print(userIds)
-                userId = random.choice(userIds)
+        length = len(item2)
+        if length == 1:
+            return 'staff ignore'
+        else:
+            for index in range(len(item2)):
+                amount = int((db.child("status_Staff").child("busy").child(item2[index]).child("amount").get()).val())
+                if amount < 2:
+                    userIds.append((db.child("status_Staff").child("busy").child(item2[index]).child("userId").get()).val())
+                    print(userIds)
+                    userId = random.choice(userIds)
     else:
         del item2[0]
         for index in range(len(item2)):
@@ -279,10 +283,16 @@ def updateQuestion(sender,question,refno):
     data = {
                "Questions/"+str(refno): {
                      "sender": sender,
-					 "question":question
+					 "question":question,
+                     "state":'no'
             }}
     db.update(data) 
     return 'update success' 
+
+def updateStateQuestion(state,refno):
+    data = {"state":str(state)}
+    db.child("Questions").child(str(refno)).update(data)
+    return 'Update success'
 
 def updateAns(refno,ans):
     data = {"ans": ans}
@@ -306,3 +316,18 @@ def deleteQuestion(refno):
     db.child("Questions").child(str(refno)).remove()
     print('Delete success')
     return 'Delete success'    
+
+def checkAmountQuestions():
+    questions = db.child("Questions").get()
+    item1 = dict(questions.val())
+    item2 = list(item1.keys())
+    length = len(item2)
+    del item2[length-1]
+    print(item2)
+    amount = 0
+    for index in range(len(item2)):
+        state = (db.child("Questions").child(item2[index]).child("state").get()).val()
+        if state == 'no':
+            amount += 1
+    print(amount)
+    return amount
