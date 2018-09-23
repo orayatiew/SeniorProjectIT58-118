@@ -96,16 +96,16 @@ def pushMgsReqToLF(sub,date,userId,sec,leavetype):
         ))
     return 'send success'
 
-def pushMsgQuickReply(role,userId):
-    if role == 'LF':
-        line_bot_api.push_message(userId, TextSendMessage(text='เลือกหัวข้อที่จะประกาศค่ะ',
-                               quick_reply=QuickReply(items=[
-                                   QuickReplyButton(action=MessageAction(label="test", text="test")),
-                                   QuickReplyButton(action=MessageAction(label="test1", text="test2"))
-                               ])))
+def pushMsgQuickReplyStaffId(userId,staffs,name):
+    line_bot_api.push_message(userId, TextSendMessage(text='เลือกเจ้าหน้าที่ที่ต้องการส่งค่ะ',
+                         quick_reply=QuickReply(items=[
+                              QuickReplyButton(action=MessageAction(label=name[0], text='ส่งคำถามให้เจ้าหน้าที่ '+staffs[0])),
+                              QuickReplyButton(action=MessageAction(label=name[1], text='ส่งคำถามให้เจ้าหน้าที่ '+staffs[1]))
+                           ])))
     return 'send quick reply'
 
 def pushMsgConfirmMissedClass(userId,sub,ID,message):
+    from getDataFromFirebase import getName , getLname
     name = getName("Students",ID)
     lname = getLname("Students",ID)
     line_bot_api.push_message(userId, TemplateSendMessage(
@@ -156,7 +156,7 @@ def pushQuestionToStaff(answer,question,refno):
                     ),
 			        MessageAction(
                         label='ส่งต่อ',
-                        text='ต้องการส่งคำถามไปยังเจ้าหน้าที่คนอื่น'
+                        text='ต้องการส่งคำถาม'+refno+'ไปยังเจ้าหน้าที่คนอื่น'
                     )
                 ]
             )

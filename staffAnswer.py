@@ -123,3 +123,29 @@ def callquestionAmount(req):
     amount = getParamOutputcontext(req,"number.original",0)    
     getQuestionAmount(amount,userId)
     return '' 
+
+def forwardToOtherStaff(req):
+    staffs = getAllStaff()
+    userId = getUserID(req)
+    ID = str(getIDFromMatchUser(userId))
+    for index in range(len(staffs)):
+        if ID == staffs[index]:
+            number = index
+    print('ID: '+str(ID)+' staffId: '+str(staffs[number]))
+    del staffs[number]
+    name = []
+    role = 'Staffs'
+    for index in range(len(staffs)):
+	    name.append(getName(role,str(staffs[index])))
+    pushMsgQuickReplyStaffId(userId,staffs,name)
+    return ''
+
+def ForwardToStaff(req):
+    refno = getParamOutputcontext(req,"code",0)
+    staffId = getParamOutputcontext(req,"ID",0)
+    role = 'Staffs'
+    userIdStaff = getUserId(role,staffId)
+    name = getName(role,staffId)
+    question = getQuestion(refno)
+    pushQuestionToStaff(userIdStaff,question,refno)
+    return 'ส่งคำถามไปยังเจ้าหน้าที่ '+str(name)+' เรียนร้อยเเล้วค่ะ'

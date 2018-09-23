@@ -69,6 +69,14 @@ def webhook():
         res = callquestionAll(req)
     if action == 'callquestionAmount':
         res = callquestionAmount(req)
+    if action == 'forwardTootherStaff':
+        res = forwardToOtherStaff(req)
+    if action == 'ForwardToStaff':
+       res = ForwardToStaff(req)
+    if action == 'staffCanceledClass':
+       res = staffCanceledClass(req)
+    if action == 'staffExamschedule':
+       res = staffExamschedule(req)
     else: 
         log.error('Unexpected action.') 
 

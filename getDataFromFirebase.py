@@ -10,6 +10,7 @@ import config
 from collections import OrderedDict
 import secrets
 from ConnectLineAPI import *
+from getDataFromDialogflow import *
 #--------------------connect firebase----------------------#
 firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)
 db = firebase.database()
@@ -56,6 +57,11 @@ def getSubjects(role,ID):
     subjects = db.child(str(role)).child(str(ID)).child("subjects").get()
     return subjects.val()
 
+def getAllStaff():
+    staffs = db.child("Staffs").get()
+    item1 = dict(staffs.val())
+    item2 = list(item1.keys())
+    return item2
           #---------------Update Method------------------#
 def updateOtpNo(role,ID,otp):
     data = {"otpNO": str(otp)}
@@ -360,16 +366,20 @@ def getQuestionAmount(amount,userId):
     length = len(item2)
     del item2[length-1]
     print('after'+ str(item2))
-    number = (length-1)-int(amount)
-    for index in range(number):
-        del item2[index]
-    print(item2)
+    arrRef = []
     for index in range(len(item2)):
         question = (db.child("Questions").child(item2[index]).child("question").get()).val()
         state = (db.child("Questions").child(item2[index]).child("state").get()).val()
         if state == 'no':
-            pushQuestionToStaff(userId,question,item2[index])
-            state = 'wait'
-            updateStateQuestion(state,item2[index])
+            arrRef.append((item2[index]))
+    print('ref of state NO:'+str(arrRef))
 
+    print(len(arrRef))
+    number = int(amount)
+    for index in range(number):
+        print(arrRef[index])
+        pushQuestionToStaff(userId,question,arrRef[index])
+        state = 'wait'
+        updateStateQuestion(state,item2[index])
     return ''
+
