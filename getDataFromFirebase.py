@@ -349,4 +349,27 @@ def getQuestionAll(amount,userId):
             state = 'wait'
             updateStateQuestion(state,item2[index])
     print(amount)
-    return amount
+    return ''
+
+def getQuestionAmount(amount,userId):
+    print(amount)
+    questions = db.child("Questions").get()
+    item1 = dict(questions.val())
+    item2 = list(item1.keys())
+    print('before ' + str(item2))
+    length = len(item2)
+    del item2[length-1]
+    print('after'+ str(item2))
+    number = (length-1)-int(amount)
+    for index in range(number):
+        del item2[index]
+    print(item2)
+    for index in range(len(item2)):
+        question = (db.child("Questions").child(item2[index]).child("question").get()).val()
+        state = (db.child("Questions").child(item2[index]).child("state").get()).val()
+        if state == 'no':
+            pushQuestionToStaff(userId,question,item2[index])
+            state = 'wait'
+            updateStateQuestion(state,item2[index])
+
+    return ''

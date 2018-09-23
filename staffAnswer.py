@@ -117,3 +117,9 @@ def callquestionAll(req):
     amount = getParamOutputcontext(req,"number",0)
     getQuestionAll(amount,userId)
     return ''
+
+def callquestionAmount(req):
+    userId = getUserID(req)
+    amount = getParamOutputcontext(req,"number.original",0)    
+    getQuestionAmount(amount,userId)
+    return '' 
