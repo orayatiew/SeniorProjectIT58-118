@@ -5,7 +5,7 @@ app = Flask(__name__)
 log = app.logger
 
 
-def getQueryRultCuase(req):
+def getQueryRultText(req):
     cuase = req.get('queryResult').get('queryText')
     return str(cuase) 
 
@@ -125,8 +125,7 @@ def getParamOutputcontextCode(req):
     return str(code)
 
 def getParamOutputcontextStatus(req):
-    outputContexts = req.get('queryResult').get('outputContexts')
-    status = outputContexts[0].get('parameters').get('status')
+    status = req.get('queryResult').get('parameters').get('status')
     return str(status)
 
 def getParamOutputcontextAmount(req):

@@ -96,12 +96,12 @@ def pushMsg_quiz(req):
     return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'    
 
 def comfirm_MissedClass(req):
-    message = getQueryRult(req)
+    message = getParamOutputcontextMessageIndexOne(req)
     userId = getUserID(req)
-    ID = getParamOutputcontextIDIndexOne(req)
-    subject = getParamOutputcontextSubjectIndexOne(req)
+    ID = getParamOutputcontextID(req)
+    subject = getParamOutputcontextSubjects(req)
     pushMsgConfirmMissedClass(userId,subject,ID,message)
-    print ( ID , subject)
+    print ( 'id'+ID + 'sub '+ subject)
     return ''
 
 def pushMsg_MissClass(req):

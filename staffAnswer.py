@@ -16,7 +16,7 @@ def collectQuestion(req):
         return ''.join(random.choice( char) for x in range(length))
     refno = random_refNO()
     sender = getUserID(req)
-    question = getQueryRult(req)
+    question = getQueryRultText(req)
     answer = getUserIdStaffAnswer()
     if answer == 'staff ignore':
         updateQuestion(sender,question,refno)
