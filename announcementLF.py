@@ -16,7 +16,7 @@ def request_announcementLF(req):
     role = getRoleFromMatchUser(userId) # request argument userid and parameters that you want to get
 
     if str(role) == 'LF':
-        announceType = getParamQueryResult(req,'type')
+        announceType = getParamQueryResultannounceType(req)
         print(announceType)
         if announceType == 'cancelclass': #Done
             return 'ต้องการแจ้งงดการเรียนการสอนวิชาอะไรคะ'
@@ -37,23 +37,21 @@ def request_announcementLF(req):
 
 def comfirm_News(req):
     userId = getUserID(req)
-    title = getParamOutputcontext(req,'title',0)
-    subject = getParamOutputcontext(req,'subject',0)
-    date = getParamOutputcontext(req,'date',0)
-    date = str(date).replace("T12:00:00+00:00","")
-    section = getParamOutputcontext(req,'section',0)
-    content = getParamOutputcontext(req,'content',0)
+    title = getParamOutputcontextTitle(req)
+    subject = getParamOutputcontextSubjects(req)
+    date = getParamOutputcontextDate(req)
+    section = getParamOutputcontextSection(req)
+    content = getParamOutputcontextContent(req)
     pushMsgConfirmNews(userId,subject,date,content,section,title)
     return ''
 
 def pushMsg_News(req):
     print(pushMsg_News)
-    title = getParamOutputcontext(req,'title',0)
-    subject = getParamOutputcontext(req,'subject',0)
-    date = getParamOutputcontext(req,'date',0)
-    date = str(date).replace("T12:00:00+00:00","")
-    section = getParamOutputcontext(req,'section',0)
-    content = getParamOutputcontext(req,'content',0)  
+    title = getParamOutputcontextTitle(req)
+    subject = getParamOutputcontextSubjects(req)
+    date = getParamOutputcontextDate(req)
+    section = getParamOutputcontextSection(req)
+    content = getParamOutputcontextContent(req)  
     print(title,subject,date,section,content)
     message = 'หัวข้อ: '+str(title)+'\nวิชา '+str(subject)+'\nวันที่'+str(date)+'\n'+str(content)+'\nแจ้งนักศึกษา '+str(section)
     if section == 'sec A':
@@ -71,15 +69,14 @@ def pushMsg_News(req):
 
 def pushMsg_quiz(req):
     print("pushMsg_quiz")
-    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    sub = getParamOutputcontextSubjects(req)
     userId = getUserID(req)
     ID = getIDFromMatchUser(userId)
     IDcheck = getLFId(str(sub))
     print(sub,ID,IDcheck)
     if ID == IDcheck:
-        sec = getParamOutputcontext(req,'section',0)
-        date = getParamOutputcontext(req,'date',0)
-        date = str(date).replace("T12:00:00+00:00","")
+        sec = getParamOutputcontextSection(req)
+        date = getParamOutputcontextDate(req)
         print(sec)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nวันที่ '+str(date)+'\nจะมีการสอบเก็บคะแนนวิชา '+str(sub)+'\nขอให้นักศึกษามาตรงเวลาด้วยค่ะ'
         if sec == 'sec A':
@@ -101,17 +98,17 @@ def pushMsg_quiz(req):
 def comfirm_MissedClass(req):
     message = getQueryRult(req)
     userId = getUserID(req)
-    ID = getParamOutputcontext(req,'id',1)
-    subject = getParamOutputcontext(req,'subject',1)
+    ID = getParamOutputcontextIDIndexOne(req)
+    subject = getParamOutputcontextSubjectIndexOne(req)
     pushMsgConfirmMissedClass(userId,subject,ID,message)
     print ( ID , subject)
     return ''
 
 def pushMsg_MissClass(req):
     userId = getUserID(req)
-    ID = getParamOutputcontext(req,'id',1)
-    subject = getParamOutputcontext(req,'subject',1)
-    message = getParamOutputcontext(req,'message',1)
+    ID = getParamOutputcontextIDIndexOne(req)
+    subject = getParamOutputcontextSubjectIndexOne(req)
+    message = getParamOutputcontextMessageIndexOne(req)
     role = 'Students'
     name = getName(role,ID)
     lname = getLname(role,ID)
@@ -121,15 +118,14 @@ def pushMsg_MissClass(req):
 
 
 def pushMsg_cancelclass(req):
-    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    sub = getParamOutputcontextSubjects(req)
     userId = getUserID(req)
     ID = getIDFromMatchUser(userId)
     IDcheck = getLFId(str(sub))
     print(sub,ID,IDcheck)
     if ID == IDcheck:
-        sec = getParamOutputcontext(req,'section',0)
-        date = getParamOutputcontext(req,'date',0)
-        date = str(date).replace("T12:00:00+00:00","")
+        sec = getParamOutputcontextSection(req)
+        date = getParamOutputcontextDate(req)
 
         print(sec)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nงดการเรียนการสอนวิชา '+str(sub) +'\nวันที่ '+str(date)
@@ -150,15 +146,14 @@ def pushMsg_cancelclass(req):
     return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
 
 def  pushMsg_compensatory(req):
-    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    sub = getParamOutputcontextSubjects(req)
     userId = getUserID(req)
     ID = getIDFromMatchUser(userId)
     IDcheck = getLFId(str(sub))
     if ID == IDcheck:
-        sec = getParamOutputcontext(req,'section',0)
-        date = getParamOutputcontext(req,'date',0)
-        date = str(date).replace("T12:00:00+00:00","")
-        time = getParamOutputcontext(req,'time.original',0)
+        sec = getParamOutputcontextSection(req)
+        date = getParamOutputcontextDate(req)
+        time = getParamOutputcontextTime(req)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nชดเชยเวลาเรียนวิชา '+str(sub) +'\nวันที่ '+str(date)+'\nเวลา '+str(time)
         if sec == 'sec A':
             stdArr= getstudentSecA(str(sub))
@@ -180,14 +175,14 @@ def  pushMsg_compensatory(req):
     return 'ส่งเเจ้งเตือนไปยังนักศึกษาเรียบร้อยเเล้วค่ะ'
     
 def  pushMsg_score(req):
-    sub = getParamOutputcontext(req,'subject',0) #request parameters name 
+    sub = getParamOutputcontextSubjects(req)
     userId = getUserID(req)
     ID = getIDFromMatchUser(userId)
     IDcheck = getLFId(str(sub))
     if ID == IDcheck:
-        sec = getParamOutputcontext(req,'section',0)
-        scoreType = getParamOutputcontext(req,'scoretype',0)
-        channel = getParamOutputcontext(req,'channel',0)
+        sec = getParamOutputcontextSection(req)
+        scoreType = getParamOutputcontextScoreType(req)
+        channel = getParamOutputcontextChannel(req)
         print(sec)
         message = 'แจ้งเตือนนักศึกษา '+str(sec)+'\nคะแนนสอบ'+str(scoreType)+'วิชา '+str(sub) +'ประกาศแล้วค่ะ\nสามารถดูได้ที่'+str(channel)
         if sec == 'sec A':

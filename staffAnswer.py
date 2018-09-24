@@ -34,7 +34,7 @@ def collectQuestion(req):
 def staffAnswer(req):
     userId_staff = getUserID(req)
     ans = getQueryRult(req)
-    refno = getParamOutputcontext(req,"code",0)
+    refno = getParamOutputcontextCode(req)
     print(refno)
     updateAns(refno,ans)
     question = getQuestion(str(refno))
@@ -45,7 +45,7 @@ def staffAnswer(req):
     return ''
 
 def pushAnsToUser(req):
-    refno = getParamOutputcontext(req,"code",0)
+    refno = getParamOutputcontextCode(req)
     userId = getsender(refno)
     question = getQuestion(refno)
     ans = getAns(refno)
@@ -57,7 +57,7 @@ def pushAnsToUser(req):
     return 'ส่งคำตอบไปยังผู้ถามเรียบร้อยแล้วค่ะ'
 
 def changeStatus(req):
-    status = getParamQueryResult(req,"status")
+    status = getParamOutputcontextStatus(req)
     userId = getUserID(req)
     staffid = getIDFromMatchUser(userId)
     nowStatus = getStatusFrommatchUser(userId)
@@ -114,13 +114,13 @@ def callQuestions(req):
 
 def callquestionAll(req):
     userId = getUserID(req)
-    amount = getParamOutputcontext(req,"number",0)
+    amount = getParamOutputcontextAmount(req)
     getQuestionAll(amount,userId)
     return ''
 
 def callquestionAmount(req):
     userId = getUserID(req)
-    amount = getParamOutputcontext(req,"number.original",0)    
+    amount = getParamOutputcontextAmount(req)  
     getQuestionAmount(amount,userId)
     return '' 
 
@@ -141,8 +141,8 @@ def forwardToOtherStaff(req):
     return ''
 
 def ForwardToStaff(req):
-    refno = getParamOutputcontext(req,"code",0)
-    staffId = getParamOutputcontext(req,"ID",0)
+    refno = getParamOutputcontextCode(req)
+    staffId = getParamOutputcontextID(req)
     role = 'Staffs'
     userIdStaff = getUserId(role,staffId)
     name = getName(role,staffId)

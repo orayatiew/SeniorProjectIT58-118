@@ -20,7 +20,7 @@ app = Flask(__name__)
 log = app.logger
 
 def auth_role(req):
-    role = getParamQueryResult(req,'role')
+    role = getParamQueryResultRole(req)
     print(role)
     if role == 'Students':
         return 'ขอรหัสนักศึกษาของคุณด้วยค่ะ'
@@ -30,8 +30,8 @@ def auth_role(req):
         return 'ขอรหัสผู้ช่วยสอนของคุณด้วยค่ะ'
 
 def authentications(req):
-    ID = getParamOutputcontext(req,'id',1)  #studentID StaffID LFID --> id
-    role = getParamOutputcontext(req,'role',1)
+    ID = getParamOutputcontextIDIndexOne(req)
+    role = getParamOutputcontextRoleIndexOne(req)
     status_auth = getStatusAuth(role,ID)
     print(role)
     print(ID)
@@ -82,10 +82,10 @@ def sendEmailAuth (email,otpno,refno):
 	return status 
 
 def checkOTP(req):
-    role = getParamOutputcontext(req,'role',0)
+    role = getParamOutputcontextRole(req)
     userId = getUserID(req)
     ID = getIDFromMatchUser(userId)
-    otpDi = getParamOutputcontext(req,'otp',0)
+    otpDi = getParamOutputcontextOTP(req)
     otpDB = getotpNo(role,ID)
 
 

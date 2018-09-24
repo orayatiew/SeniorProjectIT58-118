@@ -12,9 +12,8 @@ app = Flask(__name__)
 log = app.logger
 
 def staffCanceledClass(req):
-    year = getParamOutputcontext(req,"years",0)
-    date = getParamOutputcontext(req,"date",0)
-    date = str(date).replace("T12:00:00+00:00","")
+    year = getParamOutputcontextYear(req)
+    date = getParamOutputcontextDate(req)
     if year == 'Freshy':
         message = 'ประกาศงดการเรียนการสอนทุกวิชา\nสำหรับนักศึกษาชั้นปี1\nวันที่ '+str(date)
         to = getstudentFreshy()
@@ -45,7 +44,7 @@ def staffCanceledClass(req):
     return 'ส่งประกาศไปยังนักศึกษาเรียบร้อยแล้วค่ะ'
 
 def staffExamschedule(req):
-    year = getParamOutputcontext(req,"years",0)
+    year = getParamOutputcontextYear(req)
     message = 'ประกาศ!!ตารางสอบประกาศแล้ว \nสามารถดูได้ที่เว็บคณะ  https://www.sit.kmutt.ac.th/'
     if year == 'Freshy':
         to = getstudentFreshy()
