@@ -1,3 +1,5 @@
 firebase-admin==2.9.1
 Flask==0.12.2
 python-dateutil
+requests >= 2.0
+future
