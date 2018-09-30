@@ -27,7 +27,7 @@ def getParamQueryResultRole(req):
     return str(role)
 
 def getParamQueryResultID(req):
-    ID = req.get('queryResult').get('parameters').get('ID.original')
+    ID = req.get('queryResult').get('parameters').get('ID')
     return str(ID)
 
 def getParamOutputcontextLeavetypeIndexOne(req):

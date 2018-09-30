@@ -45,6 +45,7 @@ def getMessageContent(message_id):
      return str(message_content)
 
 def pushMgsReqToLF(sub,date,userId,sec,leavetype):
+    from getDataFromFirebase import getLFId,getIDFromMatchUser,getName,getLname,getUserId
     lfid = getLFId(sub)
     studentid = getIDFromMatchUser(userId)
     name = getName("Students",studentid)

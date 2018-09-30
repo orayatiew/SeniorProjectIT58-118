@@ -37,7 +37,7 @@ def approveReq(req):
     studentId = getParamQueryResultID(req)
     role = getParamQueryResultRole(req)
     userId = getUserId(role,studentId)
-    print (userId,studentId)
+    print (userId,studentId,role)
     message = 'คำขอของคุณได้รับการอนุมัติแล้วค่ะ'
     pushMessage(str(userId),message)
     return 'แจ้งการอนุมัติไปยังนักศึกษาเรียบร้อยแล้วค่ะ'

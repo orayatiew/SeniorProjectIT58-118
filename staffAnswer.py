@@ -33,7 +33,7 @@ def collectQuestion(req):
 
 def staffAnswer(req):
     userId_staff = getUserID(req)
-    ans = getQueryRult(req)
+    ans = getQueryRultText(req)
     refno = getParamOutputcontextCode(req)
     print(refno)
     updateAns(refno,ans)

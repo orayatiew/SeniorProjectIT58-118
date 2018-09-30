@@ -19,11 +19,13 @@ log = app.logger
 def webhook():
     req = request.get_json(silent=True, force=True)
     try:
-        action = getAction(req) #def from getDataFromDialogflow.py
+        action = getAction(req) 
     except AttributeError:
         return 'json error'
 
     # Action Switcher
+    if action == 'leavereq':
+        res = leaveRequest(req)
     if action == 'auth.request':
         res = auth_role(req)
     if action == 'auth.confirm':
@@ -48,8 +50,6 @@ def webhook():
         res = comfirm_News(req) 
     if action == 'pushNews':
         res = pushMsg_News(req)
-    if action == 'leavereq':
-        res = leaveRequest(req)
     if action == 'pushReqToLf':
         res = pushReqToLf(req)
     if action == 'approve':

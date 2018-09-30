@@ -105,10 +105,11 @@ def comfirm_MissedClass(req):
     return ''
 
 def pushMsg_MissClass(req):
-    userId = getUserID(req)
+
     ID = getParamOutputcontextIDIndexOne(req)
     subject = getParamOutputcontextSubjectIndexOne(req)
     message = getParamOutputcontextMessageIndexOne(req)
+    userId = getUserId("Students",ID)
     role = 'Students'
     name = getName(role,ID)
     lname = getLname(role,ID)
