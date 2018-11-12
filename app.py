@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
-
+import linebot
 import config
 from getDataFromDialogflow import *
 from getDataFromFirebase import *
@@ -11,15 +11,29 @@ from announcementLF import *
 from LeaveRequest import *
 from staffAnswer import *
 from announcementStaff import *
+from downloadTrainingFile import *
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage,ConfirmTemplate,MessageAction,
+    QuickReply,QuickReplyButton,MessageEvent,DatetimePickerAction,PostbackAction,PostbackEvent
+)
 
 app = Flask(__name__)
 log = app.logger
+line_bot_api = config.LINEBOTAPI_ACCESSTOKEN
+handler = config.LINEBOTAPI_SECRETTOKEN
 
 @app.route("/", methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
     try:
-        action = getAction(req) 
+        action = getAction(req)
+
     except AttributeError:
         return 'json error'
 
@@ -78,12 +92,20 @@ def webhook():
        res = staffCanceledClass(req)
     if action == 'staffExamschedule':
        res = staffExamschedule(req)
+    if action == 'downloadfile':
+       res = downloadTrainingFile(req)
+
+
     else: 
         log.error('Unexpected action.') 
 
+
+
+	
     print('Action: ' + action) 
     print('Response: ' + res)
     return make_response(jsonify({'fulfillmentText': res}))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=int(os.environ.get('PORT','5000')))

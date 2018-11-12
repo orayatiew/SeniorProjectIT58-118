@@ -11,6 +11,7 @@ from collections import OrderedDict
 app = Flask(__name__)
 log = app.logger
 
+
 def collectQuestion(req):
     def random_refNO(length = 6, char = string.ascii_uppercase):
         return ''.join(random.choice( char) for x in range(length))
@@ -53,7 +54,7 @@ def pushAnsToUser(req):
     message_answer = 'คำตอบ: '+str(ans)
     pushMessage(userId,message_question)
     pushMessage(userId,message_answer)
-    deleteQuestion(refno)
+    #deleteQuestion(refno)
     return 'ส่งคำตอบไปยังผู้ถามเรียบร้อยแล้วค่ะ'
 
 def changeStatus(req):

@@ -1,15 +1,18 @@
 from flask import Flask, request, make_response, jsonify,abort
 import json
 import os
+import linebot
+
 from linebot import (
-    LineBotApi, WebhookHandler
+    LineBotApi, WebhookHandler,WebhookParser
 )
 from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, TemplateSendMessage,ConfirmTemplate,MessageAction,
-    QuickReply,QuickReplyButton
+    QuickReply,QuickReplyButton,MessageEvent,DatetimePickerAction,PostbackAction,PostbackEvent,CarouselTemplate,
+	CarouselColumn,ButtonsTemplate,URIAction,DatetimePickerTemplateAction
 )
 import config
 from getDataFromDialogflow import *
@@ -17,6 +20,7 @@ from getDataFromFirebase import *
 
 app = Flask(__name__)
 log = app.logger
+
 
 line_bot_api = config.LINEBOTAPI_ACCESSTOKEN
 handler = config.LINEBOTAPI_SECRETTOKEN
@@ -201,4 +205,21 @@ def pushConfirmCallQuestion(userId,amount):
                 ]
             )
         ))
+
+def pushMsgLogTrainingFile(req,userId,ID):
+    from getDataFromDialogflow import getDate
+    from getDataFromFirebase import getName , getIDFromMatchUser,getName
+    from getDataFromFirebase import getotherstaff
+    receiver = []
+    receiver=getotherstaff(ID)
+    print("pushMsgLogTrainingFile"+str(receiver))
+    print(str(len(receiver)))
+    for index in range(len(receiver)):
+        to=receiver[index]
+        print(to)
+        nameStaff = getName("Staffs",getIDFromMatchUser(receiver[index]))
+        print(nameStaff)
+        message = 'เจ้าหน้าที่: '+nameStaff+' ได้ทำการ\nDownload Training File \n วันที่ '+getDate(req)
+        pushMessage(to,str(message))
+    return 'send success'
 

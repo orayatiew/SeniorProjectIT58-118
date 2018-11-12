@@ -132,3 +132,14 @@ def getParamOutputcontextAmount(req):
     outputContexts = req.get('queryResult').get('outputContexts')
     amount = outputContexts[0].get('parameters').get('number.original')
     return str(amount)
+
+def getDate(req):
+    from datetime import datetime
+    now = datetime.now()
+    print(now.strftime("%Y-%m-%d %H:%M"))
+    return str(now.strftime("%Y-%m-%d %H:%M"))
+
+def getTimestamp(req):
+    timestamp = req.get('originalDetectIntentRequest').get('payload').get('data').get('timestamp')
+    time = int(timestamp)
+    return time

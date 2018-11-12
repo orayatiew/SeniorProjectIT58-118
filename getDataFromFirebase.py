@@ -420,3 +420,63 @@ def getQuestionAmount(amount,userId):
         updateStateQuestion(state,item2[index])
     return ''
 
+def getAllQuestion():
+    questions = db.child("Questions").get()
+    item1 = dict(questions.val())
+    item2 = list(item1.keys())
+    length = len(item2)
+    del item2[length-1]
+    #print(item2)
+    question = []
+    for index in range(len(item2)):
+        question.append((db.child("Questions").child(item2[index]).child("question").get()).val())
+    return str(question)
+
+def deleteAllQuestion():
+    questions = db.child("Questions").get()
+    item1 = dict(questions.val())
+    item2 = list(item1.keys())
+    length = len(item2)
+    del item2[length-1]
+    for index in range(len(item2)):
+        db.child("Questions").child(item2[index]).remove()
+    return 'Delete All Question success'
+
+def getotherstaff(ID):
+    print(ID)
+    staffs = []
+    userIds = []
+    staffs = getAllStaff()
+    print(staffs)
+    print(str(len(staffs)))
+    for index in range(len(staffs)):
+        if ID == staffs[index]:
+            print(staffs[index],index)
+            amount = index
+    del staffs[amount]
+    print(staffs)
+    
+    for index in range(len(staffs)):
+	    userIds.append(getUserId("Staffs",staffs[index]))
+    print(str(len(userIds)) , userIds)
+    return userIds
+
+def updateLogTraining(ID,time):
+    data = {"ID": ID}
+    db.child("logTraining").child(str(time)).update(data)
+    print('Update success')
+    return 'Update success'    
+
+def AmountQuestions():
+    questions = db.child("Questions").get()
+    item1 = dict(questions.val())
+    item2 = list(item1.keys())
+    length = len(item2)
+    del item2[length-1]
+    print(item2)
+    amount = 0
+    for index in range(len(item2)):
+        (db.child("Questions").child(item2[index]).get()).val()
+        amount += 1
+    print(amount)
+    return amount

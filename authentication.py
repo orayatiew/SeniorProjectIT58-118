@@ -33,6 +33,7 @@ def authentications(req):
     ID = getParamOutputcontextIDIndexOne(req)
     role = getParamOutputcontextRoleIndexOne(req)
     status_auth = getStatusAuth(role,ID)
+    
     print(role)
     print(ID)
     print(status_auth)
@@ -96,7 +97,7 @@ def checkOTP(req):
         updateUserId(role,ID,userId)
         updateStatusAuth(role,ID)
         print('userId : '+ str(userId) )
-        outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ' 
+        outputMs = 'การยืนยันตัวตนของคุณเสร็จเรียบร้อยแล้วค่ะ คุณสามารถดูที่ "เมนู" เพื่อเลือกใช้งานต่างๆ' 
         updateRichMenu(str(userId),role) 
         deleteOtpNo(role,ID)
         if role == 'Students':
