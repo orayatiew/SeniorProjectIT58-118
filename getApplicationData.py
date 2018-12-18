@@ -9,7 +9,7 @@ import sys
 import config
 from collections import OrderedDict
 import secrets
-from ConnectLineAPI import *
+from ConnectExternalAPI import *
 from getDataFromDialogflow import *
 #--------------------connect firebase----------------------#
 firebase = pyrebase.initialize_app(config.FIREBASE_CONFIG)

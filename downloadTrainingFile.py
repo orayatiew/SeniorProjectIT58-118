@@ -10,9 +10,9 @@ from email.mime.base import MIMEBase
 from email import encoders
 import string 
 import sys	
-from getDataFromDialogflow import *
-from getDataFromFirebase import *
-from ConnectLineAPI import *
+from getAdditionalInfo import *
+from getApplicationData import *
+from ConnectExternalAPI import *
 import config
 from email.mime.text import MIMEText
 

@@ -15,8 +15,8 @@ from linebot.models import (
 	CarouselColumn,ButtonsTemplate,URIAction,DatetimePickerTemplateAction
 )
 import config
-from getDataFromDialogflow import *
-from getDataFromFirebase import *
+from getAdditionalInfo import *
+from getApplicationData import *
 
 app = Flask(__name__)
 log = app.logger
@@ -49,7 +49,7 @@ def getMessageContent(message_id):
      return str(message_content)
 
 def pushMgsReqToLF(sub,date,userId,sec,leavetype):
-    from getDataFromFirebase import getLFId,getIDFromMatchUser,getName,getLname,getUserId
+    from getApplicationData import getLFId,getIDFromMatchUser,getName,getLname,getUserId
     lfid = getLFId(sub)
     studentid = getIDFromMatchUser(userId)
     name = getName("Students",studentid)
@@ -110,7 +110,7 @@ def pushMsgQuickReplyStaffId(userId,staffs,name):
     return 'send quick reply'
 
 def pushMsgConfirmMissedClass(userId,sub,ID,message):
-    from getDataFromFirebase import getName , getLname
+    from getApplicationData import getName , getLname
     name = getName("Students",ID)
     lname = getLname("Students",ID)
     line_bot_api.push_message(userId, TemplateSendMessage(
@@ -207,9 +207,9 @@ def pushConfirmCallQuestion(userId,amount):
         ))
 
 def pushMsgLogTrainingFile(req,userId,ID):
-    from getDataFromDialogflow import getDate
-    from getDataFromFirebase import getName , getIDFromMatchUser,getName
-    from getDataFromFirebase import getotherstaff
+    from getAdditionalInfo import getDate
+    from getApplicationData import getName , getIDFromMatchUser,getName
+    from getApplicationData import getotherstaff
     receiver = []
     receiver=getotherstaff(ID)
     print("pushMsgLogTrainingFile"+str(receiver))

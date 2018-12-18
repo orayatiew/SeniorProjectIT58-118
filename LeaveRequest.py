@@ -3,9 +3,9 @@ import json
 import os
 
 import config
-from getDataFromDialogflow import *
-from getDataFromFirebase import *
-from ConnectLineAPI import *
+from getAdditionalInfo import *
+from getApplicationData import *
+from ConnectExternalAPI import *
 
 
 app = Flask(__name__)

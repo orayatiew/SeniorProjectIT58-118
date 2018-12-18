@@ -11,9 +11,9 @@ import random
 from random import randint
 import string 
 import sys	
-from getDataFromDialogflow import *
-from getDataFromFirebase import *
-from ConnectLineAPI import *
+from getAdditionalInfo import *
+from getApplicationData import *
+from ConnectExternalAPI import *
 import config
 
 app = Flask(__name__)
